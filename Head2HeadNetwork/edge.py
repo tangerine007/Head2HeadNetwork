@@ -5,14 +5,14 @@ Created on Sun Sep 18 14:28:50 2016
 @author: Ben
 """
 
-from Head2HeadNetwork import game
-
-class edge:
+class edge:  
     def __init__(self,ID,nodeAid,nodeBid,games):
         self.ID=ID
         self.nodeAid = nodeAid
         self.nodeBid = nodeBid
         self.games = games
+        self.nodeAWins = sum([i.getPlayerAWins() for i in games])
+        self.nodeBWins = sum([i.getPlayerBWins() for i in games])
         
     ###GETTER_METHODS###  
     def getId(self):
@@ -23,18 +23,33 @@ class edge:
         return self.nodeBid
     def getGames(self):
         return self.games
+    def getNodeAWins(self):
+        return self.nodeAWins
+    def getNodeBWins(self):
+        return self.nodeBWins
         
     ###SETTER_METHODS###
     def setGames(self,games):
         self.games = games
+        self.nodeAWins = sum([i.getPlayerAWins() for i in games])
+        self.nodeBWins = sum([i.getPlayerBWins() for i in games])
         
     ###MUTATOR_METHODS###
     def addGame(self,game):
         self.games += [game]
+        self.nodeAWins += game.getPlayerAWins()
+        self.nodeBWins += game.getPlayerBWins()
         
     def addGameWithParams(self,nodeAWins,nodeBWins,date):
-        self.games += game(nodeAWins,nodeBWins,date)
-        
+        newGame = game(self.nodeAid,self.nodeBid,nodeAWins,nodeBWins,date)
+        self.games += [newGame]
+        self.nodeAWins += newGame.getPlayerAWins()
+        self.nodeBWins += newGame.getPlayerBWins()
+    
+    
+    ##OTHER##
+    def toString(self):
+        return "EdgeID:'{}' - #Matches:{} - {} Wins:{} - {} Wins:{}".format(self.ID,len(self.games),self.nodeAid,self.nodeAWins,self.nodeBid,self.nodeBWins)
     
 """
 EDGE DESC:

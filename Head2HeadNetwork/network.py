@@ -37,7 +37,8 @@ class network:
     ##OTHER##
     def toString(self):
         nodeString = '\n'.join(["   "+i.toString() for i in self.nodes])
-        return "Network: {} \nNodes:\n{}".format(self.name,nodeString)
+        edgeString = '\n'.join(["   "+i.toString() for i in self.edges])
+        return "Network: {} \nNodes:\n{} \nEdges:\n{}".format(self.name,nodeString,edgeString)
         
 """
 NETWORK DESC:

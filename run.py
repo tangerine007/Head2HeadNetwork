@@ -16,18 +16,18 @@ def buildSampleNetwork():
     c = node('c',[],1)
     d = node('d',[],1)
 
-    #create some games played between these players [player1Wins,player2Wins,date]
-    gameAB_1 = game(2,0,datetime(2016,1,1))
-    gameAB_2 = game(2,1,datetime(2016,3,1))  
-    gameAB_3 = game(2,0,datetime(2016,6,1)) 
+    #create some games played between these players [playerId,player2Id,player1Wins,player2Wins,date]
+    gameAB_1 = game(a.getId(),b.getId(),2,0,datetime(2016,1,1))
+    gameAB_2 = game(a.getId(),b.getId(),2,1,datetime(2016,3,1))  
+    gameAB_3 = game(a.getId(),b.getId(),2,0,datetime(2016,6,1)) 
     gamesAB = [gameAB_1,gameAB_2,gameAB_3]#player A wins 3 matches against player B with scores 2-0, 2-1, 2-0
     
-    gamesCD_1 = game(1,2,datetime(2016,1,1))
-    gamesCD_2 = game(2,1,datetime(2016,3,1))  
-    gamesCD_3 = game(2,3,datetime(2016,6,1)) 
+    gamesCD_1 = game(c.getId(),d.getId(),1,2,datetime(2016,1,1))
+    gamesCD_2 = game(c.getId(),d.getId(),2,1,datetime(2016,3,1))  
+    gamesCD_3 = game(c.getId(),d.getId(),2,3,datetime(2016,6,1)) 
     gamesCD = [gamesCD_1,gamesCD_2,gamesCD_3]
     
-    gamesBC_1 = game(3,0,datetime(2016,4,1)) 
+    gamesBC_1 = game(b.getId(),c.getId(),3,0,datetime(2016,4,1)) 
     gamesBC = [gamesBC_1]
     
     

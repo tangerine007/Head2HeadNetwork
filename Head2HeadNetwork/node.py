@@ -18,6 +18,8 @@ class node:
         return self.edges
     def getPageRank(self):
         return self.pageRank
+    def getWinsAndLosses(self):
+        return [i.getNodeAWins() for i in edges]
         
     ###SETTER_METHODS###
     def setEdges(self,edges):
