@@ -8,8 +8,9 @@ from Head2HeadNetwork import node, edge, game, network
 from datetime import datetime
 
 def buildSampleNetwork():
-    #create the network
+    #first create the network
     sampleNet = network("sampleNet")
+    
     #create sample nodes (players)  [nodeID,edges,pagerank]
     a = node('a',[],1)
     b = node('b',[],1)

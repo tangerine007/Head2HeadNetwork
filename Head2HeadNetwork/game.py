@@ -12,6 +12,7 @@ class game:
         self.playerAId = playerAId
         self.playerBId = playerBId
         self.date = date
+        
     ###GETTER_METHODS### 
     def getPlayerAId(self):
         return self.playerAId

@@ -8,7 +8,7 @@ Created on Sun Sep 18 14:45:35 2016
 class network:
     def __init__(self,name):
         self.name = name
-        self.nodes = []
+        self.nodes = {}
         self.edges = []
         
     ###GETTER_METHODS###  
@@ -25,11 +25,21 @@ class network:
     
     ###MUTATOR_METHODS###
     def addNode(self,node):
-        self.nodes += [node]
-    def removeNode(self,node):
-        self.nodes.remove(node)
+        cont = 'yes'
+        if self.nodes.has_key(node.nodeId()):
+            cont = input("Node Already Exists, delete and replace?('yes'/'no')")
+        if cont=='yes':  
+            self.nodes[node.getId()] = []
+            
+    def removeNode(self,nodeId):
+        del self.nodes[nodeId]
+        
     def addEdge(self,edge):
         self.edges += [edge]
+        nodeAId = edge.getNodeAid()
+        nodeBId = edge.getNodeBid()
+        self.nodes[nodeAId] += [edge]
+        self.nodes[nodeBId] += [edge]
     def removeEdge(self,edge):
         self.edges.remove(edge)
         
