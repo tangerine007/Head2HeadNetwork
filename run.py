@@ -12,46 +12,49 @@ def buildSampleNetwork():
     sampleNet = network("sampleNet")
     
     #create sample nodes (players)  [nodeID]
-    a,b,c,d='abcd'
+    a,b,c,d,e,f='abcdef'
     
     #Add new players to network
     sampleNet.addNodeById(a)
     sampleNet.addNodeById(b)
     sampleNet.addNodeById(c)
     sampleNet.addNodeById(d)
-
+    sampleNet.addNodeById(e)
+    sampleNet.addNodeById(f)
+    
     #create some games played between these players [playerId,player2Id,player1Wins,player2Wins,date]
-    gameAB_1 = game(a,b,2,0,datetime(2016,1,1))
-    gameAB_2 = game(a,b,2,1,datetime(2016,3,1))  
-    gameAB_3 = game(a,b,2,0,datetime(2016,6,1)) 
-    gamesAB = [gameAB_1,gameAB_2,gameAB_3]#player A wins 3 matches against player B with scores 2-0, 2-1, 2-0
+    gameAB_1 = game(a,b,9,1,datetime(2016,1,1))
+    gamesAB = [gameAB_1]
     
-    gamesCD_1 = game(c,d,1,2,datetime(2016,1,1))
-    gamesCD_2 = game(c,d,2,1,datetime(2016,3,1))  
-    gamesCD_3 = game(c,d,2,3,datetime(2016,6,1)) 
-    gamesCD = [gamesCD_1,gamesCD_2,gamesCD_3]
-    
-    gamesBC_1 = game(b,c,3,0,datetime(2016,4,1)) 
+    gamesBC_1 = game(b,c,9,1,datetime(2016,4,1)) 
     gamesBC = [gamesBC_1]
+    
+    gamesCD_1 = game(c,d,9,1,datetime(2016,1,1))
+    gamesCD = [gamesCD_1]
+
+    gamesCE_1 = game(c,e,9,1,datetime(2016,1,1))
+    gamesCE = [gamesCE_1]
     
     
     #create edges between nodes using games played
     ab = edge(a+' vs '+b,a,b,gamesAB)
     cd = edge(c+' vs '+d,c,d,gamesCD)
     bc = edge(b+' vs '+c,b,c,gamesBC)
+    ce = edge(c+' vs '+e,c,e,gamesCE)
     
     #Add Edges to network
     sampleNet.addEdge(ab)
     sampleNet.addEdge(cd)
     sampleNet.addEdge(bc)
-
+    sampleNet.addEdge(ce)
     return sampleNet
     
     
 
 if __name__ == "__main__":
     a=buildSampleNetwork()
-    for i in range(300):
+    print a.toString()
+    for i in range(10000):
         a.runPageRank()
     print a.toString()
     
