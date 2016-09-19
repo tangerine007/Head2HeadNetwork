@@ -7,6 +7,7 @@ Created on Sun Sep 18 14:45:35 2016
 
 
 from node import node
+from math import sqrt
 
 class network:
     def __init__(self,name):
@@ -65,15 +66,11 @@ class network:
             PR_sum+=newPR_complete
         for tempNode in list(tempNodes.itervalues()):
             tempNode.setPageRank(tempNode.getPageRank()/PR_sum)
-            #PR_list+=[newPR_complete]
-        #multVal = 1.0/sum(PR_list)
-        #for newPr,tempNode in zip(PR_list,list(tempNodes.itervalues())):
-            #tempNode.setPageRank(newPr*multVal)
         self.nodes = tempNodes
         
     def singleNodePageRank(self,useSetAlpha,newPR_part1,otherId,wins,losses):
-        part_1 = (newPR_part1 if useSetAlpha else (1-wins/(wins+losses))/(len(self.nodes)))+wins/(wins+losses)
-        part_2 = self.nodes[otherId].getPageRank()/len(self.nodes[otherId].getEdgeIds())
+        part_1 = (newPR_part1 if useSetAlpha else (1-losses/(wins+losses))/(len(self.nodes)))+wins/(wins+losses)
+        part_2 = (sqrt(len(self.nodes))*self.nodes[otherId].getPageRank())/len(self.nodes[otherId].getEdgeIds())
         return part_1*part_2
         
         
