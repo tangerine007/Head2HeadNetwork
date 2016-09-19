@@ -51,7 +51,7 @@ def buildSampleNetwork():
 
 if __name__ == "__main__":
     a=buildSampleNetwork()
-    for i in range(500):
+    for i in range(300):
         a.runPageRank()
-        print a.toString()
+    print a.toString()
     

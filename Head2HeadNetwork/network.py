@@ -57,10 +57,14 @@ class network:
     def runPageRank(self,useSetAlpha=False,alpha=.5):
         newPR_part1 = (1-alpha)/(len(self.nodes))+alpha
         tempNodes = self.nodes
+        PR_list = []
         for tempNode in list(tempNodes.itervalues()):
             nodeEdgeInfo = [self.edges[edgeId].getEdgeInfoForPageRank(tempNode.getId()) for edgeId in tempNode.getEdgeIds()]
             newPR_complete = sum([self.singleNodePageRank(useSetAlpha,newPR_part1,edgeInfo[0],edgeInfo[1],edgeInfo[2]) for edgeInfo in nodeEdgeInfo])
-            tempNode.setPageRank(newPR_complete)
+            PR_list+=[newPR_complete]
+        multVal = 1/sum(PR_list)
+        for newPr,tempNode in zip(PR_list,list(tempNodes.itervalues())):
+            tempNode.setPageRank(newPr*multVal)
         self.nodes = tempNodes
         
     def singleNodePageRank(self,useSetAlpha,newPR_part1,otherId,wins,losses):

@@ -32,6 +32,8 @@ class node:
         self.edgeIds += [edgeId]
     def removeEdge(self,edge):
         self.edges.remove(edge)
+    def multPageRank(self,multVal):
+        self.pageRank*=multVal
    
     
     ##OTHER##
