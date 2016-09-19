@@ -65,10 +65,6 @@ class network:
         
     def singleNodePageRank(self,useSetAlpha,newPR_part1,otherId,wins,losses):
         part_1 = (newPR_part1 if useSetAlpha else (1-wins/(wins+losses))/(len(self.nodes)))+wins/(wins+losses)
-        print "~~~~~~~~~"
-        print self.nodes[otherId].getPageRank()
-        print len(self.nodes[otherId].getEdgeIds())
-        print "~~~~~~~~~"
         part_2 = self.nodes[otherId].getPageRank()/len(self.nodes[otherId].getEdgeIds())
         return part_1*part_2
         
