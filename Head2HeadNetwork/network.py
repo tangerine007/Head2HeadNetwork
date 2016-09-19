@@ -5,49 +5,60 @@ Created on Sun Sep 18 14:45:35 2016
 @author: Ben
 """
 
+
+from node import node
+
 class network:
     def __init__(self,name):
         self.name = name
         self.nodes = {}
-        self.edges = []
+        self.edges = {}
         
     ###GETTER_METHODS###  
     def getNodes(self):
         return self.nodes
     def getEdges(self):
         return self.edges
+    def getNodeById(self,nodeId):
+        return self.nodes[nodeId]
+    def getEdgeById(self,edgeId):
+        return self.edges[edgeId]
         
     ###SETTER_METHODS###
     def setNodes(self,nodes):
         self.nodes = nodes
     def setEdges(self,edges):
-        self.edges = edges        
+        self.edges={}
+        for edge in edges:
+            self.addEdge(edge)
+                 
     
     ###MUTATOR_METHODS###
-    def addNode(self,node):
+    def addNodeById(self,nodeId):
         cont = 'yes'
-        if self.nodes.has_key(node.nodeId()):
+        if self.nodes.has_key(nodeId):
             cont = input("Node Already Exists, delete and replace?('yes'/'no')")
         if cont=='yes':  
-            self.nodes[node.getId()] = []
+            self.nodes[nodeId] = node(nodeId)
             
-    def removeNode(self,nodeId):
+    def removeNodeById(self,nodeId):
         del self.nodes[nodeId]
         
     def addEdge(self,edge):
-        self.edges += [edge]
-        nodeAId = edge.getNodeAid()
-        nodeBId = edge.getNodeBid()
-        self.nodes[nodeAId] += [edge]
-        self.nodes[nodeBId] += [edge]
-    def removeEdge(self,edge):
-        self.edges.remove(edge)
+        self.edges[edge.getId()] = edge
+        for nodeID in edge.getNodeIds():
+            if not self.nodes.has_key(nodeID):
+                self.addNodeById(nodeID,[])
+            self.nodes[nodeID].addEdgeId(edge.getId())
+                
+    def removeEdge(self,edgeId):
+         del self.edges[edgeId]
         
         
     ##OTHER##
     def toString(self):
-        nodeString = '\n'.join(["   "+i.toString() for i in self.nodes])
-        edgeString = '\n'.join(["   "+i.toString() for i in self.edges])
+        nodeString = '\n'.join(["   "+i.toString() for i in list(self.nodes.itervalues())])
+        edgeString = '\n'.join(["   "+i.toString() for i in list(self.edges.itervalues())])
         return "Network: {} \nNodes:\n{} \nEdges:\n{}".format(self.name,nodeString,edgeString)
         
 """

@@ -24,7 +24,7 @@ class game:
         return self.playerBWins
     
     #-1 for Tie, otherwise return winner's ID
-    def getWinner(self):
+    def getMatchWinner(self):
         if self.playerAWins==self.playerBWins:
             return -1
         else:
