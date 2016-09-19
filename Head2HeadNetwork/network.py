@@ -53,6 +53,24 @@ class network:
                 
     def removeEdge(self,edgeId):
          del self.edges[edgeId]
+    
+    def runPageRank(self,useSetAlpha=False,alpha=.5):
+        newPR_part1 = (1-alpha)/(len(self.nodes))+alpha
+        tempNodes = self.nodes
+        for tempNode in list(tempNodes.itervalues()):
+            nodeEdgeInfo = [self.edges[edgeId].getEdgeInfoForPageRank(tempNode.getId()) for edgeId in tempNode.getEdgeIds()]
+            newPR_complete = sum([self.singleNodePageRank(useSetAlpha,newPR_part1,edgeInfo[0],edgeInfo[1],edgeInfo[2]) for edgeInfo in nodeEdgeInfo])
+            tempNode.setPageRank(newPR_complete)
+        self.nodes = tempNodes
+        
+    def singleNodePageRank(self,useSetAlpha,newPR_part1,otherId,wins,losses):
+        part_1 = (newPR_part1 if useSetAlpha else (1-wins/(wins+losses))/(len(self.nodes)))+wins/(wins+losses)
+        print "~~~~~~~~~"
+        print self.nodes[otherId].getPageRank()
+        print len(self.nodes[otherId].getEdgeIds())
+        print "~~~~~~~~~"
+        part_2 = self.nodes[otherId].getPageRank()/len(self.nodes[otherId].getEdgeIds())
+        return part_1*part_2
         
         
     ##OTHER##

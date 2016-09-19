@@ -9,6 +9,8 @@ from game import game
 
 class edge:  
     def __init__(self,ID,nodeAid,nodeBid,games):
+        if nodeAid==nodeBid:
+            print "CANNOT PLAY GAME AGAINST ONESELF!"
         self.ID=ID
         self.nodeAid = nodeAid
         self.nodeBid = nodeBid
@@ -37,6 +39,12 @@ class edge:
         return self.nodeBMatchWins
     def getNodeIds(self):
         return [self.nodeAid,self.nodeBid]
+    #gets [otherNodeId,NodeWins,otherNodeWins]
+    def getEdgeInfoForPageRank(self,nodeId):
+        otherNodeId = [i for i in self.getNodeIds() if i!=nodeId][0]
+        nodeWins = float([self.nodeAWins,self.nodeBWins][self.nodeAid!=nodeId])
+        nodeLosses = float([self.nodeAWins,self.nodeBWins][self.nodeAid==nodeId])
+        return otherNodeId,nodeWins,nodeLosses
         
     ###SETTER_METHODS###
     def setGames(self,games):

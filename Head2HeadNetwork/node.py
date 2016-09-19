@@ -24,16 +24,15 @@ class node:
     ###SETTER_METHODS###
     def setEdgeIds(self,edgeIds):
         self.edgeIds=edgeIds
-    def setPageRank(self,pageRank):
-        self.pageRank = pageRank
+    def setPageRank(self,newPageRank):
+        self.pageRank = newPageRank
         
     ###MUTATOR_METHODS###
     def addEdgeId(self,edgeId):
         self.edgeIds += [edgeId]
     def removeEdge(self,edge):
         self.edges.remove(edge)
-    def adjustPageRank(self,newPageRank):
-        self.pageRank = newPageRank
+   
     
     ##OTHER##
     def toString(self):
