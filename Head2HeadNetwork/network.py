@@ -7,7 +7,10 @@ Created on Sun Sep 18 14:45:35 2016
 
 
 from node import node
+from game import game
+from datetime import datetime
 from math import sqrt
+import os
 
 class network:
     def __init__(self,name):
@@ -35,6 +38,16 @@ class network:
                  
     
     ###MUTATOR_METHODS###
+    def populateNetworkFromGamesCSV(self,nameIn,path=os.path.split(os.path.abspath(__file__))[0],filename=os.path.split(os.path.abspath(__file__))[1]):
+        header=True
+        sampleNet = network(nameIn)
+        with open(os.path.join(path,filename),'r') as f:
+            for line in f:
+                if not header:
+                    p1,p2,p1w,p2w,y,m,d = line[:-1].split(",")
+                    tempGame = game(p1,p2,p1w,p2w,datetime(y,m,d))
+                header=False
+        
     def addNodeById(self,nodeId):
         cont = 'yes'
         if self.nodes.has_key(nodeId):

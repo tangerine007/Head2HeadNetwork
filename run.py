@@ -49,7 +49,6 @@ def buildSampleNetwork():
     gamesDG = [gamesDG_1]
     
     
-    
     #create edges between nodes using games played
     af = edge(a+' vs '+f,a,f,gamesAF)
     ab = edge(a+' vs '+b,a,b,gamesAB)
