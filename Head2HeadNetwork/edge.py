@@ -4,14 +4,11 @@ Created on Sun Sep 18 14:28:50 2016
 
 @author: Ben
 """
-
-from game import game
-
 class edge:  
-    def __init__(self,ID,nodeAid,nodeBid,games):
+    def __init__(self,nodeAid,nodeBid,games):
         if nodeAid==nodeBid:
             print "CANNOT PLAY GAME AGAINST ONESELF!"
-        self.ID=ID
+        self.ID=-1
         self.nodeAid = nodeAid
         self.nodeBid = nodeBid
         self.games = games
@@ -39,6 +36,7 @@ class edge:
         return self.nodeBMatchWins
     def getNodeIds(self):
         return [self.nodeAid,self.nodeBid]
+        
     #gets [otherNodeId,NodeWins,otherNodeWins]
     def getEdgeInfoForPageRank(self,nodeId):
         otherNodeId = [i for i in self.getNodeIds() if i!=nodeId][0]
@@ -47,6 +45,9 @@ class edge:
         return otherNodeId,nodeWins,nodeLosses
         
     ###SETTER_METHODS###
+    def setID(self,ID):
+        self.ID = ID
+        
     def setGames(self,games):
         self.games = games
         self.nodeAWins = sum([i.getPlayerAWins() for i in games])
@@ -63,16 +64,9 @@ class edge:
         self.nodeBMatchWins += [game.getMatchWinner()].count(self.nodeBid)
         
         
-    def addGameWithParams(self,nodeAWins,nodeBWins,date):
-        newGame = game(self.nodeAid,self.nodeBid,nodeAWins,nodeBWins,date)
-        self.games += [newGame]
-        self.nodeAWins += newGame.getPlayerAWins()
-        self.nodeBWins += newGame.getPlayerBWins()
-        self.nodeAMatchWins += [game.getMatchWinner()].count(self.nodeAid)
-        self.nodeBMatchWins += [game.getMatchWinner()].count(self.nodeBid)
-    
     ##OTHER##
     def toString(self):
+        #return "EdgeID:'{}' | Matches:{}".format(self.ID, len(self.gameIds))
         return "EdgeID:'{}' | Matches:{} - {} Wins:{} - {} Wins:{} | Games:{} - {} Wins:{} - {} Wins:{}".format(self.ID,
                 len(self.games),self.nodeAid,self.nodeAMatchWins,self.nodeBid,self.nodeBMatchWins,
                 self.nodeAWins+self.nodeBWins,self.nodeAid,self.nodeAWins,self.nodeBid,self.nodeBWins)
@@ -85,6 +79,6 @@ VARIABLES:
 ID = edge ID
 nodeAid = 'player A' ID
 nodeBid = 'player B' ID
-games = list of games played betweeen player A and player B
+gameIds = list of game IDs played betweeen player A and player B
 
 """

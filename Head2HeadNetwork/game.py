@@ -7,6 +7,7 @@ Created on Sun Sep 18 15:05:59 2016
 
 class game:
     def __init__(self,playerAId,playerBId,playerAWins,playerBWins,date):
+        self.ID=-1
         self.playerAWins = playerAWins
         self.playerBWins = playerBWins
         self.playerAId = playerAId
@@ -14,6 +15,8 @@ class game:
         self.date = date
         
     ###GETTER_METHODS### 
+    def getGameID(self):
+        return self.ID
     def getPlayerAId(self):
         return self.playerAId
     def getPlayerBId(self):
@@ -31,3 +34,6 @@ class game:
             return [self.playerAId,self.playerBId][self.playerAWins<self.playerBWins]
     def getDate(self):
         return self.date
+    ###SETTER_METHODS###
+    def setGameID(self,ID):
+        self.ID = ID

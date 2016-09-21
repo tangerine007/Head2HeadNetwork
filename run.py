@@ -45,20 +45,15 @@ def buildSampleNetwork():
     gamesEG_1 = game(e,g,1,9,datetime(2016,1,1))
     gamesEG = [gamesEG_1]
     
-    gamesDG_1 = game(d,g,1,9,datetime(2016,1,1))
-    gamesDG = [gamesDG_1]
-    
-    
     
     #create edges between nodes using games played
-    af = edge(a+' vs '+f,a,f,gamesAF)
-    ab = edge(a+' vs '+b,a,b,gamesAB)
-    cd = edge(c+' vs '+d,c,d,gamesCD)
-    bc = edge(b+' vs '+c,b,c,gamesBC)
-    ce = edge(c+' vs '+e,c,e,gamesCE)
-    cg = edge(c+' vs '+g,c,g,gamesCG)
-    eg = edge(e+' vs '+g,e,g,gamesEG)
-    dg = edge(d+' vs '+g,d,g,gamesDG)
+    af = edge(a,f,gamesAF)
+    ab = edge(a,b,gamesAB)
+    cd = edge(c,d,gamesCD)
+    bc = edge(b,c,gamesBC)
+    ce = edge(c,e,gamesCE)
+    cg = edge(c,g,gamesCG)
+    eg = edge(e,g,gamesEG)
     
     #Add Edges to network
     sampleNet.addEdge(af)
@@ -68,16 +63,24 @@ def buildSampleNetwork():
     sampleNet.addEdge(ce)
     sampleNet.addEdge(cg)
     sampleNet.addEdge(eg)
-    sampleNet.addEdge(dg)
+    
+    
+    #Oops, I forgot a game
+    gamesDG_1 = game(d,g,1,9,datetime(2016,1,1))
+    
+    #instead of adding edge dg, let's just add the game and have the graph create the edge for us!
+    sampleNet.addGame(gamesDG_1)
     
     return sampleNet
     
     
 
 if __name__ == "__main__":
-    a=buildSampleNetwork()
+    #a=buildSampleNetwork()
+    a = network("sampleNetwork")
+    a.populateNetworkFromGamesCSV("Resources","SampleNetwork.csv")
     print a.toString()
-    for i in range(1000):
+    for i in range(100):
         a.runPageRank()
     print a.toString()
     
