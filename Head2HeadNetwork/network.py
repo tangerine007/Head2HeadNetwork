@@ -5,13 +5,6 @@ Created on Sun Sep 18 14:45:35 2016
 @author: Ben
 """
 
-#TODO: restructure network in the following way...
-"""
-1) addGames:
-    a) add nodes by id if they do not exist
-    b) add edge between nodes if one does not exist
-    c) add game to edge
-"""
 
 
 from node import node as Node
@@ -44,7 +37,6 @@ class network:
             return returnGame
         else:
             print "No game by that ID exists"
-            return game(-1,-1,-1,-1,-1,datetime.now())
         
     ###SETTER_METHODS###
     def setNodes(self,nodes):
@@ -91,8 +83,21 @@ class network:
     def addGame(self,game):
         p1 = game.getPlayerAId()
         p2 = game.getPlayerBId()
-        self.edges[p1]
-                
+        if p1==p2:
+            print "Can't play game against oneself!"
+            return
+        for nodeid in [p1,p2]:
+            if not self.nodes.has_key(nodeid):
+                self.nodes[nodeId] = Node(nodeId)
+        sortedIds = sorted([p1,p2])
+        edgeId = "-vs-".join(sortedIds);
+        
+        if not self.edges.has_key(edgeId):
+            self.edges[edgeId] = edge(edgeId,sortedIds[0],sortedIds[1],[edgeId+"#0"])
+        else:
+            self.edges[edgeId].addGame([edgeId+"#"+`len(self.edges[edgeId].getGames())`])
+        
+        
     def removeEdge(self,edgeId):
          del self.edges[edgeId]
     
