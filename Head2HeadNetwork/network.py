@@ -19,7 +19,6 @@ class network:
         self.name = name
         self.nodes = {}
         self.edges = {}
-        self.games = {}
         
     ###GETTER_METHODS###  
     def getNodes(self):
@@ -84,9 +83,8 @@ class network:
             if not self.nodes.has_key(nodeId):
                 self.nodes[nodeId] = Node(nodeId)
                 self.nodes[nodeId].addEdgeId(edgeId)
-
+        edge.setID(edgeId)
         self.edges[edgeId] = edge
-        self.games[edgeId] = edge.getGameIds()
     
     def addGame(self,game):
         p1 = game.getPlayerAId()
@@ -102,9 +100,14 @@ class network:
                 self.nodes[nodeId].addEdgeId(edgeId)
 
         if not self.edges.has_key(edgeId):
-            self.edges[edgeId] = Edge(edgeId,sortedIds[0],sortedIds[1],[edgeId+"#0"])
+            game.setGameId(edgeId+"#0")
+            newEdge = Edge(sortedIds[0],sortedIds[1],[game])
+            newEdge.setID(edgeId)
+            self.edges[edgeId] = newEdge
         else:
-            self.edges[edgeId].addGame([edgeId+"#"+`len(self.edges[edgeId].getGames())`])
+            game.setGameId(edgeId+"#"+`len(self.edges[edgeId].getGames())`)
+            self.edges[edgeId].addGame(game)
+            
      #TODO: Removing a node completely from the network will be a bit more complicated than this, have to remove it from
      #Everywhere
 #    def removeNodeById(self,nodeId):
@@ -113,9 +116,8 @@ class network:
           
     #TODO: removeEdge method - remove all places edge is referenced (remove edge from list in both nodes too!)
     #def removeEdgeById(self,edgeId):
-                
-    
-        
+      
+
     
     def runPageRank(self,useSetAlpha=False,alpha=.5):
         newPR_part1 = (1-alpha)/(len(self.nodes))+alpha

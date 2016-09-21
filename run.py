@@ -50,14 +50,14 @@ def buildSampleNetwork():
     
     
     #create edges between nodes using games played
-    af = edge(a+' vs '+f,a,f,gamesAF)
-    ab = edge(a+' vs '+b,a,b,gamesAB)
-    cd = edge(c+' vs '+d,c,d,gamesCD)
-    bc = edge(b+' vs '+c,b,c,gamesBC)
-    ce = edge(c+' vs '+e,c,e,gamesCE)
-    cg = edge(c+' vs '+g,c,g,gamesCG)
-    eg = edge(e+' vs '+g,e,g,gamesEG)
-    dg = edge(d+' vs '+g,d,g,gamesDG)
+    af = edge(a,f,gamesAF)
+    ab = edge(a,b,gamesAB)
+    cd = edge(c,d,gamesCD)
+    bc = edge(b,c,gamesBC)
+    ce = edge(c,e,gamesCE)
+    cg = edge(c,g,gamesCG)
+    eg = edge(e,g,gamesEG)
+    dg = edge(d,g,gamesDG)
     
     #Add Edges to network
     sampleNet.addEdge(af)
