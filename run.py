@@ -76,11 +76,11 @@ def buildSampleNetwork():
     
 
 if __name__ == "__main__":
-    a=buildSampleNetwork()
-    #a = network("sampleNetwork")
-    #a.populateNetworkFromGamesCSV("Resources","SampleNetwork.csv")
+    #a=buildSampleNetwork()
+    a = network("sampleNetwork")
+    a.populateNetworkFromGamesCSV("Resources","SampleNetwork.csv")
     print a.toString()
-    for i in range(10):
+    for i in range(100):
         a.runPageRank()
     print a.toString()
     

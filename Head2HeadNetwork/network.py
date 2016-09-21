@@ -84,7 +84,7 @@ class network:
         for nodeId in [p1,p2]:
             if not self.nodes.has_key(nodeId):
                 self.nodes[nodeId] = Node(nodeId)
-                self.nodes[nodeId].addEdgeId(edgeId)
+            self.nodes[nodeId].addEdgeId(edgeId)
         edge.setID(edgeId)
         self.edges[edgeId] = edge
     
@@ -99,7 +99,7 @@ class network:
         for nodeId in [p1,p2]:
             if not self.nodes.has_key(nodeId):
                 self.nodes[nodeId] = Node(nodeId)
-                self.nodes[nodeId].addEdgeId(edgeId)
+            self.nodes[nodeId].addEdgeId(edgeId)
 
         if not self.edges.has_key(edgeId):
             game.setGameID(edgeId+"#0")
