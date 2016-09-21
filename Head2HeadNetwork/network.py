@@ -50,12 +50,14 @@ class network:
             self.addGame(game)
     
     ###MUTATOR_METHODS###
-    def populateNetworkFromGamesCSV(self,path=os.path.split(os.path.abspath(__file__))[0],filename=os.path.split(os.path.abspath(__file__))[1],header=True):
+    def populateNetworkFromGamesCSV(self,path=os.path.split(os.path.abspath(__file__))[0],filename="SampleNetwork.csv",header=True):
         with open(os.path.join(path,filename),'r') as f:
             for line in f:
                 if not header:
-                    p1,p2,p1w,p2w,y,m,d = line[:-1].split(",")
-                    self.addGame(Game(p1,p2,p1w,p2w,datetime(y,m,d)))
+                    p1,p2,p1w,p2w,y,m,d = line.strip("\n").split(",")
+                    p1w,p2w,y,m,d = [int(i) for i in [p1w,p2w,y,m,d]]
+                    if '' not in [p1,p2,p1w,p2w,y,m,d]:
+                        self.addGame(Game(p1,p2,p1w,p2w,datetime(y,m,d)))
                 header=False
         
     def addNodeById(self,nodeId):
@@ -100,12 +102,12 @@ class network:
                 self.nodes[nodeId].addEdgeId(edgeId)
 
         if not self.edges.has_key(edgeId):
-            game.setGameId(edgeId+"#0")
+            game.setGameID(edgeId+"#0")
             newEdge = Edge(sortedIds[0],sortedIds[1],[game])
             newEdge.setID(edgeId)
             self.edges[edgeId] = newEdge
         else:
-            game.setGameId(edgeId+"#"+`len(self.edges[edgeId].getGames())`)
+            game.setGameID(edgeId+"#"+`len(self.edges[edgeId].getGames())`)
             self.edges[edgeId].addGame(game)
             
      #TODO: Removing a node completely from the network will be a bit more complicated than this, have to remove it from

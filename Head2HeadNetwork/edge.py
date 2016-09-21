@@ -38,7 +38,6 @@ class edge:
         return [self.nodeAid,self.nodeBid]
         
     #gets [otherNodeId,NodeWins,otherNodeWins]
-    #TODO: this is used to determine PageRank, add this to network
     def getEdgeInfoForPageRank(self,nodeId):
         otherNodeId = [i for i in self.getNodeIds() if i!=nodeId][0]
         nodeWins = float([self.nodeAWins,self.nodeBWins][self.nodeAid!=nodeId])
