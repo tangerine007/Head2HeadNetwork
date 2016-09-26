@@ -147,8 +147,12 @@ class network:
         
         
     ##OTHER##
-    def toString(self):
-        nodeString = '\n'.join(["   "+i.toString() for i in list(self.nodes.itervalues())])
+    def toString(self,sortNodesByPageRank=True):
+        if sortNodesByPageRank:
+            nodeList = sorted(list(self.nodes.itervalues()), key=lambda x: x.pageRank, reverse=True)
+        else:
+            nodeList = list(self.nodes.itervalues())
+        nodeString = '\n'.join(["   "+i.toString() for i in nodeList])
         edgeString = '\n'.join(["   "+i.toString() for i in list(self.edges.itervalues())])
         return "Network: {} \nNodes:\n{} \nEdges:\n{}".format(self.name,nodeString,edgeString)
         

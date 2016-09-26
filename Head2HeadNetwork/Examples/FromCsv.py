@@ -10,11 +10,11 @@ from os.path import isdir
 from os.path import isfile
 
 
-def fromCsv():
+def fromCsv(fileIn="MensTennis2016.csv"):
     fromCsvNetwork = network("sampleNetwork")
     if isdir("Resources"):
-        if isfile("Resources/SampleNetwork.csv"):
-            fromCsvNetwork.populateNetworkFromGamesCSV("Resources","SampleNetwork.csv")
+        if isfile("Resources/"+fileIn):
+            fromCsvNetwork.populateNetworkFromGamesCSV("Resources",fileIn)
     else:
         print "File or directory not found."
         print "Please create file SampleNetwork.csv in Resources folder"

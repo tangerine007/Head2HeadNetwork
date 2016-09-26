@@ -17,6 +17,7 @@ if __name__ == "__main__":
     parser.add_argument('--ex', nargs='*', help='Builds a sample network using the selected method (manual, fromCsv)')  
     parser.add_argument('-d', action='store_true', default=False, help='Use game dates when running pagerank?')
     parser.add_argument('--days',nargs='?', default=365, help='Number of days until game is not counted in pagerank when -d flag is set.')
+    parser.add_argument('-toFile', action='store_true', default=False, help='Prints output to file when true?')
     args = parser.parse_args()
     if args.ex is not None:
         if "manual" in args.ex:
@@ -37,6 +38,9 @@ if __name__ == "__main__":
                     print "~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!\n"
                     break
             print exampleNet.toString()
+            if args.toFile:
+                with open("Resources/NetworkOutput.txt","w") as f:
+                    f.write(exampleNet.toString())
         else:
             print "No network was built, please try again"
     
