@@ -47,10 +47,9 @@ class edge:
             nodeWins=[]
             nodeLosses=[]
             for g in self.games:
-                (datetime.now()-g.getDate()).days
                 dateWeight = float(max(gamesActiveDays-(datetime.now()-g.getDate()).days,0))/gamesActiveDays
                 nodeWins+=[g.getPlayerWinsById(nodeId)*dateWeight]
-                nodeLosses+=[g.getPlayerLossesById(nodeId)*dateWeight]
+                nodeLosses+=[g.getPlayerLossesById(nodeId)/dateWeight]
             nodeWins=sum(nodeWins)
             nodeLosses=sum(nodeLosses)
         else:
