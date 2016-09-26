@@ -130,12 +130,18 @@ class network:
             newPR_complete = sum([self.singleNodePageRank(useSetAlpha,newPR_part1,edgeInfo[0],edgeInfo[1],edgeInfo[2]) for edgeInfo in nodeEdgeInfo])
             tempNode.setPageRank(newPR_complete)
             PR_sum+=newPR_complete
-        for tempNode in list(tempNodes.itervalues()):
-            tempNode.setPageRank(tempNode.getPageRank()/PR_sum)
-        self.nodes = tempNodes
+        if PR_sum!=0:
+            for tempNode in list(tempNodes.itervalues()):
+                tempNode.setPageRank(tempNode.getPageRank()/PR_sum)
+            self.nodes = tempNodes
+        else:
+            return -1
         
     def singleNodePageRank(self,useSetAlpha,newPR_part1,otherId,wins,losses):
-        part_1 = (newPR_part1 if useSetAlpha else (1-losses/(wins+losses))/(len(self.nodes)))+wins/(wins+losses)
+        if losses+wins==0:
+            part_1 = newPR_part1 if useSetAlpha else 1/len(self.nodes)
+        else:
+            part_1 = (newPR_part1 if useSetAlpha else (1-losses/(wins+losses))/(len(self.nodes)))+wins/(wins+losses)
         part_2 = (sqrt(len(self.nodes))*self.nodes[otherId].getPageRank())/len(self.nodes[otherId].getEdgeIds())
         return part_1*part_2
         

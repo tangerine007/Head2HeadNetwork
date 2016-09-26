@@ -42,17 +42,18 @@ class edge:
         
     #gets [otherNodeId,NodeWins,otherNodeWins]
     def getEdgeInfoForPageRank(self,nodeId,useDates=False,gamesActiveDays=365):
+        otherNodeId = [i for i in self.getNodeIds() if i!=nodeId][0]
         if useDates:
-            otherNodeId=[]
             nodeWins=[]
             nodeLosses=[]
             for g in self.games:
+                (datetime.now()-g.getDate()).days
                 dateWeight = float(max(gamesActiveDays-(datetime.now()-g.getDate()).days,0))/gamesActiveDays
-                otherNodeId+=[g.getOpponentId()]
                 nodeWins+=[g.getPlayerWinsById(nodeId)*dateWeight]
                 nodeLosses+=[g.getPlayerLossesById(nodeId)*dateWeight]
+            nodeWins=sum(nodeWins)
+            nodeLosses=sum(nodeLosses)
         else:
-            otherNodeId = [i for i in self.getNodeIds() if i!=nodeId][0]
             nodeWins = float([self.nodeAWins,self.nodeBWins][self.nodeAid!=nodeId])
             nodeLosses = float([self.nodeAWins,self.nodeBWins][self.nodeAid==nodeId])
         return otherNodeId,nodeWins,nodeLosses

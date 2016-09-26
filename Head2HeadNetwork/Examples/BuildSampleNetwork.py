@@ -31,19 +31,19 @@ def buildSampleNetwork():
     gameAB_1 = game(a,b,9,1,datetime(2016,1,1))
     gamesAB = [gameAB_1]
     
-    gamesBC_1 = game(b,c,9,1,datetime(2016,4,1)) 
+    gamesBC_1 = game(b,c,9,1,datetime(2016,7,1)) 
     gamesBC = [gamesBC_1]
     
-    gamesCD_1 = game(c,d,9,1,datetime(2016,1,1))
+    gamesCD_1 = game(c,d,9,1,datetime(2016,7,1))
     gamesCD = [gamesCD_1]
 
-    gamesCE_1 = game(c,e,9,1,datetime(2016,1,1))
+    gamesCE_1 = game(c,e,9,1,datetime(2016,7,1))
     gamesCE = [gamesCE_1]
     
-    gamesCG_1 = game(c,g,1,9,datetime(2016,1,1))
+    gamesCG_1 = game(c,g,1,9,datetime(2016,7,1))
     gamesCG = [gamesCG_1]
     
-    gamesEG_1 = game(e,g,1,9,datetime(2016,1,1))
+    gamesEG_1 = game(e,g,1,9,datetime(2016,7,1))
     gamesEG = [gamesEG_1]
     
     
