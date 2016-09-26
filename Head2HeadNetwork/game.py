@@ -25,6 +25,27 @@ class game:
         return self.playerAWins
     def getPlayerBWins(self):
         return self.playerBWins
+    def getPlayerWinsById(self,playerId):
+        if playerId==self.playerAId:
+            return self.playerAWins
+        if playerId==self.playerBId:
+            return self.playerBWins
+        print "No game played with that PlayerId"
+        return -1
+    def getPlayerLossesById(self,playerId):
+        if playerId==self.playerAId:
+            return self.playerBWins
+        if playerId==self.playerBId:
+            return self.playerAWins
+        print "No game played with that PlayerId"
+        return -1
+    def getOpponentId(self,playerId):
+        if playerId==self.playerAId:
+            return self.playerBId
+        if playerId==self.playerBId:
+            return self.playerAId
+        print "No game played with that PlayerId"
+        return -1
     
     #-1 for Tie, otherwise return winner's ID
     def getMatchWinner(self):

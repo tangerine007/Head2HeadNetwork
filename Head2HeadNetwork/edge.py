@@ -4,6 +4,9 @@ Created on Sun Sep 18 14:28:50 2016
 
 @author: Ben
 """
+
+from datetime import datetime
+
 class edge:  
     def __init__(self,nodeAid,nodeBid,games):
         if nodeAid==nodeBid:
@@ -38,10 +41,20 @@ class edge:
         return [self.nodeAid,self.nodeBid]
         
     #gets [otherNodeId,NodeWins,otherNodeWins]
-    def getEdgeInfoForPageRank(self,nodeId):
-        otherNodeId = [i for i in self.getNodeIds() if i!=nodeId][0]
-        nodeWins = float([self.nodeAWins,self.nodeBWins][self.nodeAid!=nodeId])
-        nodeLosses = float([self.nodeAWins,self.nodeBWins][self.nodeAid==nodeId])
+    def getEdgeInfoForPageRank(self,nodeId,useDates=False,gamesActiveDays=365):
+        if useDates:
+            otherNodeId=[]
+            nodeWins=[]
+            nodeLosses=[]
+            for g in self.games:
+                dateWeight = float(max(gamesActiveDays-(datetime.now()-g.getDate()).days,0))/gamesActiveDays
+                otherNodeId+=[g.getOpponentId()]
+                nodeWins+=[g.getPlayerWinsById(nodeId)*dateWeight]
+                nodeLosses+=[g.getPlayerLossesById(nodeId)*dateWeight]
+        else:
+            otherNodeId = [i for i in self.getNodeIds() if i!=nodeId][0]
+            nodeWins = float([self.nodeAWins,self.nodeBWins][self.nodeAid!=nodeId])
+            nodeLosses = float([self.nodeAWins,self.nodeBWins][self.nodeAid==nodeId])
         return otherNodeId,nodeWins,nodeLosses
         
     ###SETTER_METHODS###
