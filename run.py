@@ -18,6 +18,7 @@ if __name__ == "__main__":
     parser.add_argument('-d', action='store_true', default=False, help='Use game dates when running pagerank?')
     parser.add_argument('--days',nargs='?', default=365, help='Number of days until game is not counted in pagerank when -d flag is set.')
     parser.add_argument('-toFile', action='store_true', default=False, help='Prints output to file when true?')
+    parser.add_argument('-p', action='store_true', default=False, help='Print results to terminal?')
     args = parser.parse_args()
     if args.ex is not None:
         if "manual" in args.ex:
@@ -29,7 +30,8 @@ if __name__ == "__main__":
             print "Invalid selection, building sample network"            
             
         if len(exampleNet.getNodes())>0:
-            print exampleNet.toString()
+            if args.p:
+                print exampleNet.toString()
             for i in range(int(args.N)):
                 pageRankSuccess = exampleNet.runPageRank(useDate=args.d,gamesActiveDays=int(args.days))
                 if pageRankSuccess==-1:
@@ -37,7 +39,8 @@ if __name__ == "__main__":
                     print "PageRankFailed in "+str(i)+" Iterations, possible reasons:\n"+error01+"\n"
                     print "~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!\n"
                     break
-            print exampleNet.toString()
+            if args.p:
+                print exampleNet.toString()
             if args.toFile:
                 with open("Resources/NetworkOutput.txt","w") as f:
                     f.write(exampleNet.toString())
