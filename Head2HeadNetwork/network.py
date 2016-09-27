@@ -61,10 +61,9 @@ class network:
                 header=False
         
     def addNodeById(self,nodeId):
-        cont = 'no'
         if self.nodes.has_key(nodeId):
-            cont = input("Node Already Exists, delete and replace?('yes'/'no')")
-        if cont=='yes':  
+            print "Node Already Exists"
+        else:
             self.nodes[nodeId] = Node(nodeId)
             
     def addEdge(self,edge):

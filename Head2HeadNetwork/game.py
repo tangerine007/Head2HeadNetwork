@@ -8,10 +8,11 @@ Created on Sun Sep 18 15:05:59 2016
 class game:
     def __init__(self,playerAId,playerBId,playerAWins,playerBWins,date):
         self.ID=-1
-        self.playerAWins = playerAWins
-        self.playerBWins = playerBWins
-        self.playerAId = playerAId
-        self.playerBId = playerBId
+        sortedIds = sorted([playerAId,playerBId])
+        self.playerAId = sortedIds[0]
+        self.playerBId = sortedIds[1]
+        self.playerAWins = [playerBWins,playerAWins][self.playerAId==playerAId]
+        self.playerBWins = [playerAWins,playerBWins][self.playerAId==playerAId]
         self.date = date
         
     ###GETTER_METHODS### 

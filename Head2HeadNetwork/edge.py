@@ -63,16 +63,16 @@ class edge:
         
     def setGames(self,games):
         self.games = games
-        self.nodeAWins = sum([i.getPlayerAWins() for i in games])
-        self.nodeBWins = sum([i.getPlayerBWins() for i in games])
+        self.nodeAWins = sum([i.getPlayerWinsById(self.nodeAid) for i in games])
+        self.nodeBWins = sum([i.getPlayerWinsById(self.nodeBid) for i in games])
         self.nodeAMatchWins = [i.getMatchWinner() for i in games].count(self.nodeAid)
         self.nodeBMatchWins = [i.getMatchWinner() for i in games].count(self.nodeBid)
         
     ###MUTATOR_METHODS###
     def addGame(self,game):
         self.games += [game]
-        self.nodeAWins += game.getPlayerAWins()
-        self.nodeBWins += game.getPlayerBWins()
+        self.nodeAWins += game.getPlayerWinsById(self.nodeAid)
+        self.nodeBWins += game.getPlayerWinsById(self.nodeBid) 
         self.nodeAMatchWins += [game.getMatchWinner()].count(self.nodeAid)
         self.nodeBMatchWins += [game.getMatchWinner()].count(self.nodeBid)
         
