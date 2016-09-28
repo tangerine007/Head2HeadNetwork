@@ -11,7 +11,7 @@ from node import node as Node
 from edge import edge as Edge
 from game import game as Game
 from datetime import datetime
-from math import sqrt
+from math import log
 import os
 
 class network:
@@ -141,7 +141,7 @@ class network:
             part_1 = newPR_part1 if useSetAlpha else 1/len(self.nodes)
         else:
             part_1 = (newPR_part1 if useSetAlpha else (1-losses/(wins+losses))/(len(self.nodes)))+wins/(wins+losses)
-        part_2 = (sqrt(len(self.nodes))*self.nodes[otherId].getPageRank())/len(self.nodes[otherId].getEdgeIds())
+        part_2 = (log(len(self.nodes))*self.nodes[otherId].getPageRank())/len(self.nodes[otherId].getEdgeIds())
         return part_1*part_2
         
         
