@@ -126,7 +126,8 @@ class network:
         PR_sum= 0
         for tempNode in list(tempNodes.itervalues()):
             nodeEdgeInfo = [self.edges[edgeId].getEdgeInfoForPageRank(tempNode.getId(),useGameWins,useDate,gamesActiveDays) for edgeId in tempNode.getEdgeIds()]
-            newPR_complete = (log(len(tempNode.getEdgeIds()))/2) * sum([self.singleNodePageRank(useSetAlpha,newPR_part1,edgeInfo[0],edgeInfo[1],edgeInfo[2],alpha) for edgeInfo in nodeEdgeInfo])
+            #TODO: (log(len(tempNode.getEdgeIds()))/2) *
+            newPR_complete = sum([self.singleNodePageRank(useSetAlpha,newPR_part1,edgeInfo[0],edgeInfo[1],edgeInfo[2],alpha) for edgeInfo in nodeEdgeInfo])
             tempNode.setPageRank(newPR_complete)
             PR_sum+=newPR_complete
         if PR_sum!=0:
