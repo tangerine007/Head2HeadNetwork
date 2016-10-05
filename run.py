@@ -19,6 +19,7 @@ if __name__ == "__main__":
     parser.add_argument('--days',nargs='?', default=365, help='Number of days until game is not counted in pagerank when -d flag is set.')
     parser.add_argument('-toFile', action='store_true', default=False, help='Prints output to file when true?')
     parser.add_argument('-p', action='store_true', default=False, help='Print results to terminal?')
+    parser.add_argument('-byGames',action='store_true', default=False, help='Rank players taking all games into consideration? Default is to rank players by the winner of matches only.')
     args = parser.parse_args()
     if args.ex is not None:
         if "manual" in args.ex:

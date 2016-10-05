@@ -41,20 +41,30 @@ class edge:
         return [self.nodeAid,self.nodeBid]
         
     #gets [otherNodeId,NodeWins,otherNodeWins]
-    def getEdgeInfoForPageRank(self,nodeId,useDates=False,gamesActiveDays=365):
+    def getEdgeInfoForPageRank(self,nodeId,useGameWins=False,useDates=False,gamesActiveDays=365):
         otherNodeId = [i for i in self.getNodeIds() if i!=nodeId][0]
         if useDates:
             nodeWins=[]
             nodeLosses=[]
             for g in self.games:
                 dateWeight = float(max(gamesActiveDays-(datetime.now()-g.getDate()).days,0))/gamesActiveDays
-                nodeWins+=[g.getPlayerWinsById(nodeId)*dateWeight]
-                nodeLosses+=[g.getPlayerLossesById(nodeId)/dateWeight]
+                if useGameWins:
+                    nodeWins+=[g.getPlayerWinsById(nodeId)*dateWeight]
+                    nodeLosses+=[g.getPlayerLossesById(nodeId)/dateWeight]
+                else:
+                    winner = g.getMatchWinner()==nodeId
+                    if winner!=-1:
+                        nodeWins+=[winner*dateWeight]
+                        nodeLosses+=[-1*(winner-1)/dateWeight]
             nodeWins=sum(nodeWins)
             nodeLosses=sum(nodeLosses)
         else:
-            nodeWins = float([self.nodeAWins,self.nodeBWins][self.nodeAid!=nodeId])
-            nodeLosses = float([self.nodeAWins,self.nodeBWins][self.nodeAid==nodeId])
+            if useGameWins:
+                nodeWins = float([self.nodeAWins,self.nodeBWins][self.nodeAid!=nodeId])
+                nodeLosses = float([self.nodeAWins,self.nodeBWins][self.nodeAid==nodeId])
+            else:
+                nodeWins = float([self.nodeAMatchWins,self.nodeBMatchWins][self.nodeAid!=nodeId])
+                nodeLosses = float([self.nodeAMatchWins,self.nodeBMatchWins][self.nodeAid==nodeId])
         return otherNodeId,nodeWins,nodeLosses
         
     ###SETTER_METHODS###

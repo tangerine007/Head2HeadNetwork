@@ -120,12 +120,12 @@ class network:
       
 
     
-    def runPageRank(self,useSetAlpha=False,alpha=.85,useDate=False,gamesActiveDays=365):
+    def runPageRank(self,useSetAlpha=False,alpha=.85,useGameWins=False,useDate=False,gamesActiveDays=365):
         newPR_part1 = (1-alpha)/(len(self.nodes))+alpha
         tempNodes = self.nodes
         PR_sum= 0
         for tempNode in list(tempNodes.itervalues()):
-            nodeEdgeInfo = [self.edges[edgeId].getEdgeInfoForPageRank(tempNode.getId(),useDate,gamesActiveDays) for edgeId in tempNode.getEdgeIds()]
+            nodeEdgeInfo = [self.edges[edgeId].getEdgeInfoForPageRank(tempNode.getId(),useGameWins,useDate,gamesActiveDays) for edgeId in tempNode.getEdgeIds()]
             newPR_complete = sum([self.singleNodePageRank(useSetAlpha,newPR_part1,edgeInfo[0],edgeInfo[1],edgeInfo[2]) for edgeInfo in nodeEdgeInfo])
             tempNode.setPageRank(newPR_complete)
             PR_sum+=newPR_complete
