@@ -21,6 +21,7 @@ if __name__ == "__main__":
     parser.add_argument('-p', action='store_true', default=False, help='Print results to terminal?')
     parser.add_argument('-byGames',action='store_true', default=False, help='Rank players taking all games into consideration? Default is to rank players by the winner of matches only.')
     args = parser.parse_args()
+    
     if args.ex is not None:
         if "manual" in args.ex:
             exampleNet = buildSampleNetwork()
@@ -34,7 +35,7 @@ if __name__ == "__main__":
             if args.p:
                 print exampleNet.toString()
             for i in range(int(args.N)):
-                pageRankSuccess = exampleNet.runPageRank(useDate=args.d,gamesActiveDays=int(args.days))
+                pageRankSuccess = exampleNet.runPageRank(useDate=args.d,useGameWins=args.byGames,gamesActiveDays=int(args.days))
                 if pageRankSuccess==-1:
                     print "\n~!~!~!~!~!~!~!~!~!~!~!~!~!~!~!"
                     print "PageRankFailed in "+str(i)+" Iterations, possible reasons:\n"+error01+"\n"
