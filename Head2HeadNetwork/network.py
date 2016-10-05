@@ -126,7 +126,7 @@ class network:
         PR_sum= 0
         for tempNode in list(tempNodes.itervalues()):
             nodeEdgeInfo = [self.edges[edgeId].getEdgeInfoForPageRank(tempNode.getId(),useGameWins,useDate,gamesActiveDays) for edgeId in tempNode.getEdgeIds()]
-            newPR_complete = sum([self.singleNodePageRank(useSetAlpha,newPR_part1,edgeInfo[0],edgeInfo[1],edgeInfo[2]) for edgeInfo in nodeEdgeInfo])
+            newPR_complete = sum([self.singleNodePageRank(useSetAlpha,newPR_part1,edgeInfo[0],edgeInfo[1],edgeInfo[2],alpha) for edgeInfo in nodeEdgeInfo])
             tempNode.setPageRank(newPR_complete)
             PR_sum+=newPR_complete
         if PR_sum!=0:
@@ -136,14 +136,14 @@ class network:
         else:
             return -1
         
-    def singleNodePageRank(self,useSetAlpha,newPR_part1,otherId,wins,losses):
+    def singleNodePageRank(self,useSetAlpha,newPR_part1,otherId,wins,losses,alpha=.85):
         wins,losses=float(wins),float(losses)
         nodeNum = float(len(self.nodes))
         if losses+wins==0:
             part_1 = newPR_part1 if useSetAlpha else 1/nodeNum
         else:
-            part_1 = (newPR_part1 if useSetAlpha else (1-losses/(wins+losses))/(nodeNum))+wins/(wins+losses)
-        part_2 = (log(nodeNum)*self.nodes[otherId].getPageRank())/len(self.nodes[otherId].getEdgeIds())
+            part_1 = (newPR_part1 if useSetAlpha else (1-alpha)/(nodeNum))+wins/(wins+losses)
+        part_2 = ((log(nodeNum)/2)*self.nodes[otherId].getPageRank())/len(self.nodes[otherId].getEdgeIds())
         return part_1*part_2
         
         
