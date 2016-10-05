@@ -18,8 +18,6 @@ class node:
         return self.edgeIds
     def getPageRank(self):
         return self.pageRank
-    def getWinsAndLosses(self):
-        return [i.getNodeAWins() for i in self.edges]
         
     ###SETTER_METHODS###
     def setEdgeIds(self,edgeIds):
@@ -30,8 +28,8 @@ class node:
     ###MUTATOR_METHODS###
     def addEdgeId(self,edgeId):
         self.edgeIds += [edgeId]
-    def removeEdge(self,edge):
-        self.edges.remove(edge)
+    def removeEdge(self,edgeId):
+        self.edgeIds.remove(edgeId)
     def multPageRank(self,multVal):
         self.pageRank*=multVal
    
