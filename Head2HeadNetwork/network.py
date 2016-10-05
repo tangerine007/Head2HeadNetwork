@@ -137,11 +137,13 @@ class network:
             return -1
         
     def singleNodePageRank(self,useSetAlpha,newPR_part1,otherId,wins,losses):
+        wins,losses=float(wins),float(losses)
+        nodeNum = float(len(self.nodes))
         if losses+wins==0:
-            part_1 = newPR_part1 if useSetAlpha else 1/len(self.nodes)
+            part_1 = newPR_part1 if useSetAlpha else 1/nodeNum
         else:
-            part_1 = (newPR_part1 if useSetAlpha else (1-losses/(wins+losses))/(len(self.nodes)))+wins/(wins+losses)
-        part_2 = (log(len(self.nodes))*self.nodes[otherId].getPageRank())/len(self.nodes[otherId].getEdgeIds())
+            part_1 = (newPR_part1 if useSetAlpha else (1-losses/(wins+losses))/(nodeNum))+wins/(wins+losses)
+        part_2 = (log(nodeNum)*self.nodes[otherId].getPageRank())/len(self.nodes[otherId].getEdgeIds())
         return part_1*part_2
         
         

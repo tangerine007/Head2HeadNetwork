@@ -11,7 +11,7 @@ from os.path import isfile
 
 #AonHeadToHead2016
 #MensTennis2016
-def fromCsv(fileIn="AonHeadToHead2016.csv"):
+def fromCsv(fileIn="MensTennis2016.csv"):
     fromCsvNetwork = network("sampleNetwork")
     if isdir("Resources"):
         if isfile("Resources/"+fileIn):
