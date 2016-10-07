@@ -59,3 +59,7 @@ class game:
     ###SETTER_METHODS###
     def setGameID(self,ID):
         self.ID = ID
+        
+    def toString(self):
+        return "GameID:{} | PlayerA:{} - PlayerB:{} | #Games:{} | {} Wins:{} {} Wins:{} | Date:{}".format(self.ID, self.playerAId,
+self.playerBId,(self.playerAWins+self.playerBWins),self.playerAId,self.playerAWins,self.playerBId,self.playerBWins,self.date)

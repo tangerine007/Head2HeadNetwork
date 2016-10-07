@@ -11,7 +11,7 @@ from node import node as Node
 from edge import edge as Edge
 from game import game as Game
 from datetime import datetime
-from math import log
+from math import log,sqrt
 import os
 
 class network:
@@ -126,8 +126,13 @@ class network:
         PR_sum= 0
         for tempNode in list(tempNodes.itervalues()):
             nodeEdgeInfo = [self.edges[edgeId].getEdgeInfoForPageRank(tempNode.getId(),useGameWins,useDate,gamesActiveDays) for edgeId in tempNode.getEdgeIds()]
-            #TODO: (log(len(tempNode.getEdgeIds()))/2) *
-            newPR_complete = sum([self.singleNodePageRank(useSetAlpha,newPR_part1,edgeInfo[0],edgeInfo[1],edgeInfo[2],alpha) for edgeInfo in nodeEdgeInfo])
+            #TODO: (log(len(tempNode.getEdgeIds()))/2) *tempNode.getPageRank()
+            #
+            newPr_notSummed=[self.singleNodePageRank(useSetAlpha,newPR_part1,edgeInfo[0],edgeInfo[1],edgeInfo[2],alpha) for edgeInfo in nodeEdgeInfo]
+            #newPr_notSummed = sorted(newPr_notSummed)
+            #newPr_notSummed = [max(newPr_notSummed)-abs(tempNode.getPageRank()-i) for i in newPr_notSummed]
+            #(max(newPr_notSummed)-min(newPr_notSummed))
+            newPR_complete = sum(newPr_notSummed)
             tempNode.setPageRank(newPR_complete)
             PR_sum+=newPR_complete
         if PR_sum!=0:
