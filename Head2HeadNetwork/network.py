@@ -148,7 +148,7 @@ class network:
         if losses+wins==0:
             part_1 = newPR_part1 if useSetAlpha else 1/nodeNum
         else:
-            part_1 = (newPR_part1 if useSetAlpha else (1-alpha)/(nodeNum))+wins/(wins+losses)
+            part_1 = (newPR_part1 if useSetAlpha else (losses/(wins+losses))/(nodeNum)) + wins/(wins+losses)
         part_2 = ((log(nodeNum)/2)*self.nodes[otherId].getPageRank())/float(len(self.nodes[otherId].getEdgeIds()))
         return part_1*part_2
         
