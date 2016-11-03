@@ -50,12 +50,12 @@ class edge:
                 dateWeight = float(max(gamesActiveDays-(datetime.now()-g.getDate()).days,0))/gamesActiveDays
                 if useGameWins:
                     nodeWins+=[g.getPlayerWinsById(nodeId)*dateWeight]
-                    nodeLosses+=[g.getPlayerLossesById(nodeId)/dateWeight]
+                    nodeLosses+=[g.getPlayerLossesById(nodeId)]#[g.getPlayerLossesById(nodeId)/dateWeight]
                 else:
                     winner = g.getMatchWinner()==nodeId
                     if winner!=-1:
                         nodeWins+=[winner*dateWeight]
-                        nodeLosses+=[-1*(winner-1)/dateWeight]
+                        nodeLosses+=[-1*(winner-1)]#[-1*(winner-1)/dateWeight]
             nodeWins=sum(nodeWins)
             nodeLosses=sum(nodeLosses)
         else:
