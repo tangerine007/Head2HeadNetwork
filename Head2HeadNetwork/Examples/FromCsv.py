@@ -12,7 +12,7 @@ from os.path import isfile
 #AonHeadToHead2016
 #MensTennis2016
 #garpr
-def fromCsv(fileIn="MensTennis2016.csv"):
+def fromCsv(fileIn="garpr.csv"):
     fromCsvNetwork = network("sampleNetwork")
     if isdir("Resources"):
         if isfile("Resources/"+fileIn):

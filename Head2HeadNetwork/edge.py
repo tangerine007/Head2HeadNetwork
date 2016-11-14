@@ -37,6 +37,20 @@ class edge:
         return self.nodeAMatchWins
     def getNodeBMatchWins(self):
         return self.nodeBMatchWins
+    def getPlayerMatchWinsById(self,playerId):
+        if playerId==self.nodeAid:
+            return self.nodeAMatchWins
+        if playerId==self.nodeBid:
+            return self.nodeBMatchWins
+        print "No game played with that PlayerId"
+        return -1
+    def getPlayerMatchLossesById(self,playerId):
+        if playerId==self.nodeAid:
+            return self.nodeBMatchWins
+        if playerId==self.nodeBid:
+            return self.nodeAMatchWins
+        print "No game played with that PlayerId"
+        return -1
     def getNodeIds(self):
         return [self.nodeAid,self.nodeBid]
         
