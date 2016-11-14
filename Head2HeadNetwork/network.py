@@ -130,6 +130,7 @@ class network:
             newPR_complete = sum(newPr_notSummed)
             tempNode.setPageRank(newPR_complete)
             PR_sum+=newPR_complete
+        if PR_sum!=0:
             self.nodes = tempNodes
         else:
             return -1
@@ -141,6 +142,7 @@ class network:
             part_1 = newPR_part1 if useSetAlpha else 1/nodeNum
         else:
             part_1 = (newPR_part1 if useSetAlpha else (losses/(wins+losses))/(nodeNum)) + wins/(wins+losses)
+
         part_2 = (sqrt(self.nodes[otherId].getPageRank()))/float(len(self.nodes[otherId].getEdgeIds()))/log(nodeNum)
 
         return part_1*part_2
