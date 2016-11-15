@@ -46,13 +46,21 @@ class networkLat:
         self.LossMatrix[playerIndex[1]][playerIndex[0]]+=p2Losses
         self.M = self.L / self.L.sum(axis=0)
 
-    def runPageRank(self):
-        d = 0.85
-        part_1 = np.multiply(np.ones((len(self.players),1)),(1-d)/len(self.players))
-        print part_1
-        part_2 = np.multiply(self.M,d).dot(self.PR)
-        self.PR = np.add(part_1,part_2)
-        print self.PR
+    def runPageRank(self,runType="Head2Head"): 
+        if runType=="Vanilla":
+            d=.85
+            part_1 = np.ones((len(self.players),1))*(1-d)/len(self.players)
+            part_2 = (self.M*d).dot(self.PR)
+            self.PR = np.add(part_1,part_2)
+        elif runType=="Head2Head":
+            d=.0000001
+            part_1 = self.LossMatrix.dot(self.PR*(1-d))/np.array([np.sum(self.LossMatrix,0)]).T#check dimensions
+            part_2 = d/len(self.players)
+            part_3 = ((self.PR*(1-d))/len(self.players))
+            part_3=part_3*np.array([np.ma.masked_equal(np.sum(self.LossMatrix,0),0).mask],int).T
+            self.PR = np.add(np.add(part_1,part_2),part_3)
+        else:
+            print "Invalid runType chosen, valid runtypes are Vanilla/Head2Head"
 
 
 z = networkLat('test')
@@ -62,5 +70,7 @@ z.addGame('a','c',2,3)
 z.addGame('z','d',2,3)     
 z.addGame('c','d',2,3) 
 z.addGame('a','d',2,3)
-for i in range(10):
+for i in range(1000):
     z.runPageRank()
+print z.PR
+print sum(z.PR)
