@@ -45,7 +45,7 @@ def pWin(p1,p2):
         return p1
     deltaMu = p1.skillMean - p2.skillMean
     rsss = sqrt(p1.skillSigma**2 + p2.skillSigma**2)
-    return [p1,p2][norm.cdf(deltaMu/rsss)>random()]
+    return [p1,p2][norm.cdf(deltaMu/rsss)<random()]
     
     
     
@@ -144,4 +144,4 @@ def generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelInd
 
 #RUN
 generatePlayers(fileOut='players.csv',simulatedPlayersN=100,regionR=1,localL=1,skillSigma=0)
-generateTournaments(fileIn='players.csv',fileOut='tournaments.csv',playerTravelIndex=.5)
+generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelIndex=.01)

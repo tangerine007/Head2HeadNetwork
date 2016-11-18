@@ -13,6 +13,8 @@ from game import game as Game
 from datetime import datetime
 from math import log,sqrt
 import os
+from pandas import read_csv
+
 
 class network:
     def __init__(self,name):
@@ -146,7 +148,21 @@ class network:
         part_2 = (sqrt(self.nodes[otherId].getPageRank()))/float(len(self.nodes[otherId].getEdgeIds()))/log(nodeNum)
 
         return part_1*part_2
+    
+    def validate(self,fileIn="Validation/Resources/games.csv"):
+        gamesFile = read_csv(fileIn)
+        for i in gamesFile.index:
+            j=gamesFile.ix[i]
+            d=datetime.now()
+            self.addGame(Game(`j.p1Id`,`j.p2Id`,int(j.p1Id==j.winnerId),int(j.p2Id==j.winnerId),d))
+        self.runPageRank(False,.85,False,False,365)
+        with open("../Resources/NetworkOutput.txt","w") as f:
+            f.write(self.toString())
         
+        players=read_csv("Validation/Resources/players.csv")
+        players=players.sort_values(by='skillMean',ascending=False) 
+        players.to_csv("../Resources/NetworkOutput_Validation.txt")
+            
         
     ##OTHER##
     def toString(self,sortNodesByPageRank=True):

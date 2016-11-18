@@ -7,6 +7,7 @@ Created on Lon Nov 14 18:45:22 2016
 
 import numpy as np
 import datetime
+from pandas import read_csv
 
 def timer(a,m=100):
     start = datetime.datetime.now()
@@ -53,7 +54,7 @@ class networkLat:
             part_2 = (self.M*d).dot(self.PR)
             self.PR = np.add(part_1,part_2)
         elif runType=="Head2Head":
-            d=.0000001
+            d=.00001
             part_1 = self.LossMatrix.dot(self.PR*(1-d))/np.array([np.sum(self.LossMatrix,0)]).T#check dimensions
             part_2 = d/len(self.players)
             part_3 = ((self.PR*(1-d))/len(self.players))
@@ -61,16 +62,20 @@ class networkLat:
             self.PR = np.add(np.add(part_1,part_2),part_3)
         else:
             print "Invalid runType chosen, valid runtypes are Vanilla/Head2Head"
-
+            
+    
 
 z = networkLat('test')
+z.validate()
+"""
 z.addGame('a','b',1,2)
 z.addGame('a','b',5,4)
 z.addGame('a','c',2,3)   
 z.addGame('z','d',2,3)     
 z.addGame('c','d',2,3) 
 z.addGame('a','d',2,3)
-for i in range(1000):
+for i in range(100000):
     z.runPageRank()
 print z.PR
 print sum(z.PR)
+"""
