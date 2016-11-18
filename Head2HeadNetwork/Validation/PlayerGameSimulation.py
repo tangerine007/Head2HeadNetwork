@@ -41,7 +41,7 @@ def seed(n):
 def pWin(p1,p2):
     if type(p1)==int:
         return p2
-    if type(p1)==int:
+    if type(p2)==int:
         return p1
     deltaMu = p1.skillMean - p2.skillMean
     rsss = sqrt(p1.skillSigma**2 + p2.skillSigma**2)
@@ -52,11 +52,21 @@ def pWin(p1,p2):
 def runTournament(tourneyPlayers):
     games=[]
     tourneyPlayers = tourneyPlayers.sort_values(by='skillMean',ascending=False)
-    
     tourneySeed = [tourneyPlayers.iloc[i-1] if i>0 else 0 for i in seed(len(tourneyPlayers))]
-    tourneySeed = map(None, *([iter(tourneySeed)] * 2))
     #Start with single elimination, add option for double elimination later?
-    #for game in tourneySeed:
+    #each game takes form of [p1Id,p2Id,winnerPlayerId]
+    while len(tourneySeed)>1:
+        tourneySeed = map(None, *([iter(tourneySeed)] * 2))
+        nextRound=[]
+        for game in tourneySeed:
+            winner = pWin(game[0],game[1])
+            if type(game[0])!=int and type(game[1])!=int:
+                games+=[map(int,[game[0].playerId,game[1].playerId,winner.playerId])]
+            nextRound+=[winner]
+        tourneySeed=nextRound
+    return games
+        
+        
         
     
 
@@ -85,7 +95,6 @@ def generateLocalTournament(region,local,fileIn='players.csv',playerTravelIndex=
         localPlayers = localPlayers.sample(n=playerTypeList[0])
     
     tourneyPlayers = concat((localPlayers,regionPlayers,nationalPlayers))
-    runTournament(tourneyPlayers)
 
     
     
