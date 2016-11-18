@@ -4,7 +4,7 @@ Created on Wed Nov 16 21:02:10 2016
 
 @author: Ben
 """
-import random
+from random import random,randint,gauss,uniform
 from math import log, ceil, sqrt
 from pandas import read_csv, concat
 from scipy.stats import norm
@@ -17,10 +17,10 @@ def generatePlayers(fileOut='players.csv',simulatedPlayersN=10000,regionR=4,loca
         f.write("playerId,region,local,skillMean,skillSigma\n")
         for i in range(simulatedPlayersN):
             playerId=`i`
-            region=`random.randint(1,regionR)`
-            local=`random.randint(1,localL)`
-            skillMean=`min(max(random.gauss(50,10),0),100)`
-            skillSigmaToWrite=`random.uniform(skillSigma/2,skillSigma)`
+            region=`randint(1,regionR)`
+            local=`randint(1,localL)`
+            skillMean=`min(max(gauss(50,10),0),100)`
+            skillSigmaToWrite=`uniform(skillSigma/2,skillSigma)`
             writeString = playerId+","+region+","+local+","+skillMean+","+skillSigmaToWrite+'\n'
             f.write(writeString)
             
@@ -45,13 +45,13 @@ def pWin(p1,p2):
         return p1
     deltaMu = p1.skillMean - p2.skillMean
     rsss = sqrt(p1.skillSigma**2 + p2.skillSigma**2)
-    return [p1,p2][norm.cdf(deltaMu/rsss)>random.random()]
+    return [p1,p2][norm.cdf(deltaMu/rsss)>random()]
     
     
     
 def runTournament(tourneyPlayers):
     games=[]
-    tourneyPlayers = tourneyPlayers.sort_values(by='skillMean',ascending=False)
+    tourneyPlayers = tourneyPlayers.sort_values(by='skillMean',ascending=False) 
     tourneySeed = [tourneyPlayers.iloc[i-1] if i>0 else 0 for i in seed(len(tourneyPlayers))]
     #Start with single elimination, add option for double elimination later?
     #each game takes form of [p1Id,p2Id,winnerPlayerId]
@@ -72,17 +72,16 @@ def runTournament(tourneyPlayers):
 
 #Break down into Generating one tournament at a time, running them to collect the games
 def generateLocalTournament(region,local,fileIn='players.csv',playerTravelIndex=.01):
-    tourneySize=30
     players = read_csv("Resources/"+fileIn)
     nationalPlayers = players.query('region!='+`region`)
     regionPlayers = players.query('region=='+`region`+' and local!='+`local`)
     localPlayers = players.query('region=='+`region`+' and local=='+`local`)
-    
+    tourneySize = randint(len(localPlayers)/4,len(localPlayers)*4/5)
     playerTypeList=[0,0,0]#local,regional,national
     for i in range(tourneySize):
-        if random.random()<=playerTravelIndex**2:
+        if random()<=playerTravelIndex**2:
             playerTypeList[2]+=1
-        elif random.random()>=1-playerTravelIndex:
+        elif random()>=1-playerTravelIndex:
             playerTypeList[1]+=1
         else:
             playerTypeList[0]+=1
@@ -93,24 +92,33 @@ def generateLocalTournament(region,local,fileIn='players.csv',playerTravelIndex=
         regionPlayers = regionPlayers.sample(n=playerTypeList[1])
     if playerTypeList[0]>0:
         localPlayers = localPlayers.sample(n=playerTypeList[0])
-    
+        
     tourneyPlayers = concat((localPlayers,regionPlayers,nationalPlayers))
+    return runTournament(tourneyPlayers)
 
     
     
 #playerTravelIndex: % of a regional player entering in a local
 #playerTravelIndex**2: % of a national player playing in a local
-def generateTournaments(fileIn='players.csv',fileOut='tournaments.csv',playerTravelIndex=.01):
+def generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelIndex=.01):
     players = read_csv("Resources/"+fileIn)
-    regionsR = range(players['region'].max())
-    localsL= range(players['local'].max())
-    generateLocalTournament(region=1,local=1,fileIn='players.csv',playerTravelIndex=.01)
-    #with open("Resources/"+fileOut,'w') as f:
-        #f.write("GameId,playerId,region,skillMean,skillSigma\n")
-       
-
-
-
+    regionsR = players['region'].max()
+    localsL= players['local'].max()
+    
+    with open("Resources/"+fileOut,'w') as f:
+        f.write("p1Id,p2Id,winnerId,region,local,tourneyType\n")
+        print "Generating Local Tournaments..."
+        for i in range(1,100):
+            region=randint(1,regionsR)
+            local=randint(1,localsL)
+            games = generateLocalTournament(region=region,local=local,fileIn=fileIn,playerTravelIndex=playerTravelIndex)
+            for j in games:
+                p1Id = j[0]
+                p2Id = j[1]
+                winnerId =j[2]
+                tourneyType="local"
+                writeString = `p1Id`+","+`p2Id`+","+`winnerId`+","+`region`+","+`local`+","+tourneyType+'\n'
+                f.write(writeString)
 
 #Run generated Tournaments:
 #1) Create a likelyhood that a player will beat another player based on their difference in skill level (mimic Microsoft TrueSkill)
