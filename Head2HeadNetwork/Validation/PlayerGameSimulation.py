@@ -117,29 +117,8 @@ def generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelInd
                 tourneyType="local"
                 writeString = `p1Id`+","+`p2Id`+","+`winnerId`+","+`region`+","+`local`+","+tourneyType+'\n'
                 f.write(writeString)
-
-
-#----------BELOW CAN BE USED IN A GENERAL SENSE TO TEST REAL DATA------------
-
-#Build Training/Test sets:
-#1) Collect one game from all players in the network
-#2) From those games, if more games were played against the same opponent, grab all games played between the two players
-#3) Randomly select more games (all games between two opponents included) until training is at 'train%'. These games will be added 
-    #into the network
-#4) The remaining games will be put in a separate pile 'test%' pile
-#**for right now let's assume 'train%'=70% and 'test%'=30%
-
-
-
-
-
-#Train/Test the model!:
-#1) Train the network using your training set
-#2) Based on the output pageranks for each player in the network, predict who will win all of the games in the test set
-#3) Display the results
-
-
-
+                
+                
 #RUN
 generatePlayers(fileOut='players.csv',simulatedPlayersN=100,regionR=1,localL=1,skillSigma=0)
 generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelIndex=.01)

@@ -7,7 +7,8 @@ Created on Lon Nov 14 18:45:22 2016
 
 import numpy as np
 import datetime
-from pandas import read_csv
+from pandas import read_csv, concat, DataFrame
+from sklearn.cross_validation import train_test_split
 
 def timer(a,m=100):
     start = datetime.datetime.now()
@@ -26,11 +27,20 @@ class networkLat:
         self.M = np.zeros((1,1))#NxN matrix of total outgoing edges of each player i when a connection i-j exists   
         self.LossMatrix = np.zeros((1,1))#loss adjacency matrix (how many times has player i lost to player j)
         #TODO: self.dateWeightGames = np.array([[]])
-    
-    def addGame(self,p1,p2,p1Losses,p2Losses):
+        
+    def addGame(self,p1,p2,*args):
         #First get the index of the players in the current game
+        if len(args)==1:
+            p1Losses = int(args[0]==p2)
+            p2Losses = int(args[0]==p1)   
+        elif len(args)==2:
+            p1Losses = args[0]
+            p2Losses = args[1]
+        else:
+            print "Invalid number of arguments chosen, valid choices are p1Losses/p2Losses, winnerId"
+            
         playerIndex = []
-        playerList = [p1,p2]
+        playerList = map(lambda x: x.replace('.0',''),[p1,p2])
         for i in playerList:
             if not self.players.has_key(i):
                 self.players[i] = len(self.players)
@@ -47,13 +57,20 @@ class networkLat:
         self.LossMatrix[playerIndex[1]][playerIndex[0]]+=p2Losses
         self.M = self.L / self.L.sum(axis=0)
 
-    def runPageRank(self,runType="Head2Head"): 
+    def runPageRank(self,runType="paper"): 
         if runType=="Vanilla":
             d=.85
             part_1 = np.ones((len(self.players),1))*(1-d)/len(self.players)
             part_2 = (self.M*d).dot(self.PR)
             self.PR = np.add(part_1,part_2)
         elif runType=="Head2Head":
+            d=.85
+            #**under construction
+            #d=.85
+            #part_1 = np.ones((len(self.players),1))*(1-d)/len(self.players)
+            #part_2 = (self.M*d).dot(self.PR)
+            #self.PR = np.add(part_1,part_2)
+        elif runType == "paper":
             d=.00001
             part_1 = self.LossMatrix.dot(self.PR*(1-d))/np.array([np.sum(self.LossMatrix,0)]).T#check dimensions
             part_2 = d/len(self.players)
@@ -61,12 +78,61 @@ class networkLat:
             part_3=part_3*np.array([np.ma.masked_equal(np.sum(self.LossMatrix,0),0).mask],int).T
             self.PR = np.add(np.add(part_1,part_2),part_3)
         else:
-            print "Invalid runType chosen, valid runtypes are Vanilla/Head2Head"
-            
+            print "Invalid runType chosen, valid runtypes are Vanilla/Head2Head/paper"
+        
+        
+    def validate(self,gameFileIn="Validation/Resources/games.csv",playerFileIn="Validation/Resources/players.csv",runType="Head2Head",runs=50):
+        games = read_csv(gameFileIn)
+        playersFile = read_csv(playerFileIn)
     
+        trainGames, testGames = self.splitTrainTestSets(games,playersFile)
+        
+        #Train model
+        inputType = ['p1Losses:p2Losses','winnerId']["winnerId" in trainGames.columns]
+        for i in trainGames.index:
+            game=trainGames.ix[i]
+            if inputType=="winnerId":
+                self.addGame(`game.p1Id`,`game.p2Id`,`game.winnerId`)
+            if inputType=='p1Losses:p2Losses':
+                self.addGame(`game.p1Id`,`game.p2Id`,`game.p1Losses`,`game.p2Losses`)
+        for i in range(runs):
+            self.runPageRank(runType)
+        
+        totalGames=len(testGames)
+        correctPredictions=0.0
+        #Test Model
+        for i in testGames.index:
+            game=testGames.ix[i]
+            p1Rank = self.PR[self.players[str(game.p1Id)]][0]
+            p2Rank = self.PR[self.players[str(game.p2Id)]][0]
+
+            inputType = ['p1Losses:p2Losses','winnerId']["winnerId" in trainGames.columns]
+            if inputType=="winnerId":
+                correctPredictions += int(game.winnerId == [game.p1Id,game.p2Id][p1Rank<p2Rank])
+            if inputType=='p1Losses:p2Losses':
+                correctPredictions += int([game.p1Id,game.p2Id][game.p1Losses>game.p2Losses] == [game.p1Id,game.p2Id][p1Rank<p2Rank])
+        return correctPredictions/totalGames
+        
+    #*ensures at least one game from every player is in the training set
+    def splitTrainTestSets(self,games,playersFile,testPercent=0.3):
+        names=playersFile['playerId'].tolist()
+        oneGameEach = DataFrame(data=None,columns=games.columns)
+        for i in names:
+            playerGames = concat((games.loc[games.p1Id==i],games.loc[games.p2Id==i]))
+            if len(playerGames)>0:
+                chosenGame = playerGames.sample(n=1)
+                oneGameEach = oneGameEach.append(chosenGame)
+                games = games[games.index!=chosenGame.index[0]]
+        train, test = train_test_split(games, test_size = testPercent)
+        train = concat((train,oneGameEach))
+        return train, test
+
 
 z = networkLat('test')
-z.validate()
+prediction = z.validate(runType="Vanilla")
+print "{}% correct predictions".format(int(prediction*100))
+
+
 """
 z.addGame('a','b',1,2)
 z.addGame('a','b',5,4)
