@@ -9,6 +9,8 @@ import numpy as np
 import datetime
 from pandas import read_csv, concat, DataFrame
 from sklearn.cross_validation import train_test_split
+from math import sqrt, log
+
 
 def timer(a,m=100):
     start = datetime.datetime.now()
@@ -57,20 +59,18 @@ class networkLat:
         self.LossMatrix[playerIndex[1]][playerIndex[0]]+=p2Losses
         self.M = self.L / self.L.sum(axis=0)
 
-    def runPageRank(self,runType="paper"): 
+    def runPageRank(self,runType="Head2Head"): 
         if runType=="Vanilla":
             d=.85
             part_1 = np.ones((len(self.players),1))*(1-d)/len(self.players)
             part_2 = (self.M*d).dot(self.PR)
             self.PR = np.add(part_1,part_2)
         elif runType=="Head2Head":
-            d=.85
-            #**under construction
-            #d=.85
-            #part_1 = np.ones((len(self.players),1))*(1-d)/len(self.players)
-            #part_2 = (self.M*d).dot(self.PR)
-            #self.PR = np.add(part_1,part_2)
-        elif runType == "paper":
+            winPercent = self.LossMatrix.T/(self.LossMatrix+self.LossMatrix.T)
+            winPercent = np.nan_to_num(winPercent)
+            newPR = (winPercent * self.M).dot(np.sqrt(self.PR))/log(len(self.players)) 
+            self.PR = newPR
+        elif runType == "Paper":
             d=.00001
             part_1 = self.LossMatrix.dot(self.PR*(1-d))/np.array([np.sum(self.LossMatrix,0)]).T#check dimensions
             part_2 = d/len(self.players)
@@ -127,21 +127,59 @@ class networkLat:
         train = concat((train,oneGameEach))
         return train, test
 
+def testValidation():
+    z = networkLat('test')
+    prediction = z.validate(runType="Vanilla")
+    print "{}% correct predictions".format(int(prediction*100))
+    z = networkLat('test')
+    prediction = z.validate(runType="Head2Head")
+    print "{}% correct predictions".format(int(prediction*100))
+    z = networkLat('test')
+    prediction = z.validate(runType="Paper")
+    print "{}% correct predictions".format(int(prediction*100))
+    return z
 
-z = networkLat('test')
-prediction = z.validate(runType="Vanilla")
-print "{}% correct predictions".format(int(prediction*100))
+def testRunPageRank():
+    z = networkLat('test')
 
-
+    z.addGame('a','b',1,6)
+    z.addGame('a','c',2,7)   
+    z.addGame('z','d',3,8)     
+    z.addGame('c','d',4,9) 
+    z.addGame('a','d',5,10)
+    for i in range(0):
+        z.runPageRank(runType="Vanilla")
+    for i in range(30):
+        winPercent = z.LossMatrix.T/(z.LossMatrix+z.LossMatrix.T)
+        winPercent = np.nan_to_num(winPercent)
+        newPR = (winPercent * z.M).dot(np.sqrt(z.PR))/log(len(z.players)) 
+        z.PR = newPR
+    print "----------------"
+    return z
 """
-z.addGame('a','b',1,2)
-z.addGame('a','b',5,4)
-z.addGame('a','c',2,3)   
-z.addGame('z','d',2,3)     
-z.addGame('c','d',2,3) 
-z.addGame('a','d',2,3)
-for i in range(100000):
-    z.runPageRank()
+part_1 is (1-d)/N part of this
+take sqrt of every element in array = np.array(map(lambda x: map(lambda y: sqrt(y),x),wins/total))
+"""
+
+
+z=testValidation()
 print z.PR
-print sum(z.PR)
+print sum(z.PR)[0]
+
+"""Loss Matrix Desc:
+In this loss matrix we see player z(i=3) has 3 losses to player d(i=4)
+In this loss matrix we see player d(i=4) has 8 losses to player z(i=3)
+*player(i) will have LossMatrix[j,i] losses to player(j)
+*total games played between two players is LossMatrix[i,j]+LossMatrix[j,i] OR (z.LossMatrix+z.LossMatrix.T)[i,j]
+[[  0.   1.   2.   0.   5.]
+ [  6.   0.   0.   0.   0.]
+ [  7.   0.   0.   0.   4.]
+ [  0.   0.   0.   0.   3.]
+ [ 10.   0.   9.   8.   0.]]
+ 
+[[  0.   7.   9.   0.  15.]
+ [  7.   0.   0.   0.   0.]
+ [  9.   0.   0.   0.  13.]
+ [  0.   0.   0.   0.  11.]
+ [ 15.   0.  13.  11.   0.]]
 """
