@@ -66,9 +66,6 @@ def runTournament(tourneyPlayers):
         tourneySeed=nextRound
     return games
         
-        
-        
-    
 
 #Break down into Generating one tournament at a time, running them to collect the games
 def generateLocalTournament(region,local,fileIn='players.csv',playerTravelIndex=.01):
@@ -107,6 +104,7 @@ def generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelInd
     
     with open("Resources/"+fileOut,'w') as f:
         f.write("p1Id,p2Id,winnerId,region,local,tourneyType\n")
+        
         print "Generating Local Tournaments..."
         for i in range(1,100):
             region=randint(1,regionsR)
@@ -120,10 +118,6 @@ def generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelInd
                 writeString = `p1Id`+","+`p2Id`+","+`winnerId`+","+`region`+","+`local`+","+tourneyType+'\n'
                 f.write(writeString)
 
-#Run generated Tournaments:
-#1) Create a likelyhood that a player will beat another player based on their difference in skill level (mimic Microsoft TrueSkill)
-#2) Collect all games played and outcomes
-
 
 #----------BELOW CAN BE USED IN A GENERAL SENSE TO TEST REAL DATA------------
 
@@ -134,6 +128,10 @@ def generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelInd
     #into the network
 #4) The remaining games will be put in a separate pile 'test%' pile
 #**for right now let's assume 'train%'=70% and 'test%'=30%
+
+
+
+
 
 #Train/Test the model!:
 #1) Train the network using your training set
