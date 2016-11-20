@@ -16,7 +16,7 @@ def timer(a,m=100):
     start = datetime.datetime.now()
     for i in range(m):
         a;
-    return "{}ms".format((datetime.datetime.now()-start).microseconds/1000.0)
+    return "{}s".format((datetime.datetime.now()-start).microseconds/1000.0)
 
 #j are columns #'s
 #i are row #'s
@@ -58,17 +58,84 @@ class networkLat:
         self.LossMatrix[playerIndex[0]][playerIndex[1]]+=p1Losses
         self.LossMatrix[playerIndex[1]][playerIndex[0]]+=p2Losses
         self.M = self.L / self.L.sum(axis=0)
+        
+    def addGamesInBulk(self,allGames,playersFile,inputType="winnerId"):
+        playersN = len(playersFile)
+        self.PR = np.ones((playersN,1))#1xN matrix of player pageranks 
+        self.LossMatrix = np.zeros((playersN,playersN))
+        self.L = np.zeros((playersN,playersN))
+        playerIndex=0
+        for i in playersFile["playerId"].tolist():
+            self.players[`i`.replace('.0','')] = playerIndex
+            playerIndex+=1
+        
+        count=1
+        #start = datetime.datetime.now()
+        for game in allGames.itertuples():
+            """
+            if count%500==0:
+                (datetime.datetime.now()-start).seconds / 500.0 * 1000
+                print "{}ms per 1000 iterations".format((datetime.datetime.now()-start).microseconds/1000.0 / 500.0 * 1000)
+                endTime = (len(allGames.index)-count)*(max((datetime.datetime.now()-start).microseconds/1000.0,.000001) / 500.0) /60.0/60
+                print "Estimated end time in... {} minutes...".format(endTime)
+                print "{} games left to process...".format(len(allGames.index)-count)
+                start = datetime.datetime.now()
+            """
+            if inputType=="winnerId":
+                p1Losses = int(game.winnerId==game.p1Id)
+                p2Losses = int(game.winnerId==game.p2Id) 
+            if inputType=='p1Losses:p2Losses':
+                self.addGame(`game.p1Id`,`game.p2Id`,`game.p1Losses`,`game.p2Losses`)
+                p1Losses = game.p1Losses
+                p2Losses = game.p2Losses
+            playerIndex = [self.players.get(`game.p1Id`.replace('.0','')),self.players.get(`game.p2Id`.replace('.0',''))] 
+            self.LossMatrix[playerIndex[0]][playerIndex[1]]+=p1Losses
+            self.LossMatrix[playerIndex[1]][playerIndex[0]]+=p2Losses
+            self.L[playerIndex[0]][playerIndex[1]]=1
+            self.L[playerIndex[1]][playerIndex[0]]=1
+            count+=1
+        self.M = self.L / self.L.sum(axis=0)
+        self.removePlayersWithNoGames()        
+        
+    def removePlayersWithNoGames(self):
+        while min(map(sum,self.L))==0:
+            deadRow=0
+            for lRow in range(len(self.L)):
+                if(sum(self.L[lRow])==0):
+                    deadRow = lRow
+            self.L=np.delete(self.L,deadRow,0)
+            self.L=np.delete(self.L,deadRow,1)
+            self.M=np.delete(self.M,deadRow,0)
+            self.M=np.delete(self.M,deadRow,1)
+            self.LossMatrix=np.delete(self.LossMatrix,deadRow,0)
+            self.LossMatrix=np.delete(self.LossMatrix,deadRow,1)
+            self.PR=np.delete(self.PR,deadRow,0)
+            self.players.pop(self.players.keys()[self.players.values().index(deadRow)])
+            for i in self.players.iterkeys():
+                if self.players[i]>deadRow:
+                    self.players[i]-=1
+
+        
+    #M is the NxN matrix of total outgoing edges of each player i when a connection i-j exists  
+    def getM(self):
+        return  np.nan_to_num(self.getL() / self.getL().sum(axis=0))
+        
+    #L is the adjacency matrix for all nodes
+    def getL(self):
+        return (self.LossMatrix+self.LossMatrix.T != 0).astype(float)
 
     def runPageRank(self,runType="Head2Head"): 
         if runType=="Vanilla":
             d=.85
             part_1 = np.ones((len(self.players),1))*(1-d)/len(self.players)
-            part_2 = (self.M*d).dot(self.PR)
+            part_2 = (self.getM()*d).dot(self.PR)
             self.PR = np.add(part_1,part_2)
         elif runType=="Head2Head":
             winPercent = self.LossMatrix.T/(self.LossMatrix+self.LossMatrix.T)
             winPercent = np.nan_to_num(winPercent)
-            newPR = (winPercent * self.M).dot(np.sqrt(self.PR))/log(len(self.players)) 
+            lossPercent = self.LossMatrix/(self.LossMatrix+self.LossMatrix.T)
+            lossPercent = np.nan_to_num(lossPercent)
+            newPR = ((winPercent+(lossPercent+1)/len(self.players)) * self.getM()).dot(np.sqrt(self.PR)/log(len(self.players)))
             self.PR = newPR
         elif runType == "Paper":
             d=.00001
@@ -91,30 +158,30 @@ class networkLat:
         
         #Train model
         print "Adding games to model..."
-        inputType = ['p1Losses:p2Losses','winnerId']["winnerId" in trainGames.columns]
-        for i in trainGames.index:
-            game=trainGames.ix[i]
-            if inputType=="winnerId":
-                self.addGame(`game.p1Id`,`game.p2Id`,`game.winnerId`)
-            if inputType=='p1Losses:p2Losses':
-                self.addGame(`game.p1Id`,`game.p2Id`,`game.p1Losses`,`game.p2Losses`)
+        self.addGamesInBulk(trainGames,playersFile,"winnerId")
+
         print "Running pagerank algorithm on data..."
+        #start = datetime.datetime.now()
         for i in range(runs):
             self.runPageRank(runType)
-        
-        totalGames=len(testGames)
+            """
+            endTime = (runs-i)*((datetime.datetime.now()-start).microseconds / 1000.0 / 1000.0)
+            print "Estimated completion in... {} seconds...".format(endTime)
+            start = datetime.datetime.now()
+            """
+        totalGames=0
         correctPredictions=0.0
         #Test Model
-        for i in testGames.index:
-            game=testGames.ix[i]
-            p1Rank = self.PR[self.players[str(game.p1Id)]][0]
-            p2Rank = self.PR[self.players[str(game.p2Id)]][0]
-
-            inputType = ['p1Losses:p2Losses','winnerId']["winnerId" in trainGames.columns]
-            if inputType=="winnerId":
-                correctPredictions += int(game.winnerId == [game.p1Id,game.p2Id][p1Rank<p2Rank])
-            if inputType=='p1Losses:p2Losses':
-                correctPredictions += int([game.p1Id,game.p2Id][game.p1Losses>game.p2Losses] == [game.p1Id,game.p2Id][p1Rank<p2Rank])
+        for game in testGames.itertuples():
+            if self.players.has_key(str(game.p1Id)) and self.players.has_key(str(game.p2Id)):  
+                p1Rank = self.PR[self.players[str(game.p1Id)]][0]
+                p2Rank = self.PR[self.players[str(game.p2Id)]][0]
+                inputType = ['p1Losses:p2Losses','winnerId']["winnerId" in trainGames.columns]
+                if inputType=="winnerId":
+                    correctPredictions += int(game.winnerId == [game.p1Id,game.p2Id][p1Rank<p2Rank])
+                if inputType=='p1Losses:p2Losses':
+                    correctPredictions += int([game.p1Id,game.p2Id][game.p1Losses>game.p2Losses] == [game.p1Id,game.p2Id][p1Rank<p2Rank])
+                totalGames+=1
         return correctPredictions/totalGames
         
     #*ensures at least one game from every player is in the training set
@@ -142,12 +209,12 @@ class networkLat:
         train = concat((train,oneGameEach))
         return train, test
 
-def testValidation():
+def testValidation(runs=25):
     z = networkLat('test')
-    prediction = z.validate(runType="Vanilla")
+    prediction = z.validate(runType="Vanilla",runs=runs)
     print "{}% correct predictions".format(int(prediction*100))
     z = networkLat('test')
-    prediction = z.validate(runType="Head2Head")
+    prediction = z.validate(runType="Head2Head",runs=runs)
     print "{}% correct predictions".format(int(prediction*100))
     #z = networkLat('test')
     #prediction = z.validate(runType="Paper")
@@ -172,9 +239,8 @@ take sqrt of every element in array = np.array(map(lambda x: map(lambda y: sqrt(
 """
 
 
-z=testValidation()
-for i in range(30):
-    print sum(z.PR)[0]
+z=testValidation(runs=25)
+
 
 """Loss Matrix Desc:
 In this loss matrix we see player z(i=3) has 3 losses to player d(i=4)
