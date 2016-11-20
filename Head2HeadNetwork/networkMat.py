@@ -27,7 +27,7 @@ class networkLat:
         self.PR = np.ones((1,1))#1xN matrix of player pageranks
         self.L = np.zeros((1,1))#adjacency matrix for all nodes
         self.M = np.zeros((1,1))#NxN matrix of total outgoing edges of each player i when a connection i-j exists   
-        self.LossMatrix = np.zeros((1,1))#loss adjacency matrix (how many times has player i lost to player j)
+        self.WinMatrix = np.zeros((1,1))#loss adjacency matrix (how many times has player i lost to player j)
         #TODO: self.dateWeightGames = np.array([[]])
         
     def addGame(self,p1,p2,*args):
@@ -50,19 +50,19 @@ class networkLat:
                     self.PR = np.vstack([self.PR,[self.PR.mean()]])
                     self.L = np.concatenate((self.L,np.zeros((self.L.shape[0],1)).T),0)
                     self.L = np.concatenate((self.L,np.zeros((self.L.shape[0],1))),1)
-                    self.LossMatrix = np.concatenate((self.LossMatrix,np.zeros((self.LossMatrix.shape[0],1)).T),0)
-                    self.LossMatrix = np.concatenate((self.LossMatrix,np.zeros((self.LossMatrix.shape[0],1))),1)
+                    self.WinMatrix = np.concatenate((self.WinMatrix,np.zeros((self.WinMatrix.shape[0],1)).T),0)
+                    self.WinMatrix = np.concatenate((self.WinMatrix,np.zeros((self.WinMatrix.shape[0],1))),1)
             playerIndex+=[self.players.get(i)]
         self.L[playerIndex[0]][playerIndex[1]]=1
         self.L[playerIndex[1]][playerIndex[0]]=1
-        self.LossMatrix[playerIndex[0]][playerIndex[1]]+=p1Losses
-        self.LossMatrix[playerIndex[1]][playerIndex[0]]+=p2Losses
+        self.WinMatrix[playerIndex[0]][playerIndex[1]]+=p1Losses
+        self.WinMatrix[playerIndex[1]][playerIndex[0]]+=p2Losses
         self.M = self.L / self.L.sum(axis=0)
         
     def addGamesInBulk(self,allGames,playersFile,inputType="winnerId"):
         playersN = len(playersFile)
         self.PR = np.ones((playersN,1))#1xN matrix of player pageranks 
-        self.LossMatrix = np.zeros((playersN,playersN))
+        self.WinMatrix = np.zeros((playersN,playersN))
         self.L = np.zeros((playersN,playersN))
         playerIndex=0
         for i in playersFile["playerId"].tolist():
@@ -89,8 +89,8 @@ class networkLat:
                 p1Losses = game.p1Losses
                 p2Losses = game.p2Losses
             playerIndex = [self.players.get(`game.p1Id`.replace('.0','')),self.players.get(`game.p2Id`.replace('.0',''))] 
-            self.LossMatrix[playerIndex[0]][playerIndex[1]]+=p1Losses
-            self.LossMatrix[playerIndex[1]][playerIndex[0]]+=p2Losses
+            self.WinMatrix[playerIndex[0]][playerIndex[1]]+=p1Losses
+            self.WinMatrix[playerIndex[1]][playerIndex[0]]+=p2Losses
             self.L[playerIndex[0]][playerIndex[1]]=1
             self.L[playerIndex[1]][playerIndex[0]]=1
             count+=1
@@ -107,8 +107,8 @@ class networkLat:
             self.L=np.delete(self.L,deadRow,1)
             self.M=np.delete(self.M,deadRow,0)
             self.M=np.delete(self.M,deadRow,1)
-            self.LossMatrix=np.delete(self.LossMatrix,deadRow,0)
-            self.LossMatrix=np.delete(self.LossMatrix,deadRow,1)
+            self.WinMatrix=np.delete(self.WinMatrix,deadRow,0)
+            self.WinMatrix=np.delete(self.WinMatrix,deadRow,1)
             self.PR=np.delete(self.PR,deadRow,0)
             self.players.pop(self.players.keys()[self.players.values().index(deadRow)])
             for i in self.players.iterkeys():
@@ -122,7 +122,7 @@ class networkLat:
         
     #L is the adjacency matrix for all nodes
     def getL(self):
-        return (self.LossMatrix+self.LossMatrix.T != 0).astype(float)
+        return (self.WinMatrix+self.WinMatrix.T != 0).astype(float)
 
     def runPageRank(self,runType="Head2Head"): 
         if runType=="Vanilla":
@@ -131,18 +131,18 @@ class networkLat:
             part_2 = (self.getM()*d).dot(self.PR)
             self.PR = np.add(part_1,part_2)
         elif runType=="Head2Head":
-            winPercent = self.LossMatrix.T/(self.LossMatrix+self.LossMatrix.T)
-            winPercent = np.nan_to_num(winPercent)
-            lossPercent = self.LossMatrix/(self.LossMatrix+self.LossMatrix.T)
+            lossPercent = self.WinMatrix.T/(self.WinMatrix+self.WinMatrix.T)
             lossPercent = np.nan_to_num(lossPercent)
-            newPR = ((winPercent+(lossPercent+1)/len(self.players)) * self.getM()).dot(np.sqrt(self.PR)/log(len(self.players)))
+            winPercent = self.WinMatrix/(self.WinMatrix+self.WinMatrix.T)
+            winPercent = np.nan_to_num(winPercent)
+            newPR = ((winPercent+(lossPercent)/len(self.players)) * self.getM()).dot(np.sqrt(self.PR)/log(len(self.players)))
             self.PR = newPR
         elif runType == "Paper":
             d=.00001
-            part_1 = self.LossMatrix.dot(self.PR*(1-d))/np.array([np.sum(self.LossMatrix,0)]).T#check dimensions
+            part_1 = self.WinMatrix.dot(self.PR*(1-d))/np.array([np.sum(self.WinMatrix,0)]).T#check dimensions
             part_2 = d/len(self.players)
             part_3 = ((self.PR*(1-d))/len(self.players))
-            part_3=part_3*np.array([np.ma.masked_equal(np.sum(self.LossMatrix,0),0).mask],int).T
+            part_3=part_3*np.array([np.ma.masked_equal(np.sum(self.WinMatrix,0),0).mask],int).T
             self.PR = np.add(np.add(part_1,part_2),part_3)
         else:
             print "Invalid runType chosen, valid runtypes are Vanilla/Head2Head/paper"
@@ -245,8 +245,8 @@ z=testValidation(runs=25)
 """Loss Matrix Desc:
 In this loss matrix we see player z(i=3) has 3 losses to player d(i=4)
 In this loss matrix we see player d(i=4) has 8 losses to player z(i=3)
-*player(i) will have LossMatrix[j,i] losses to player(j)
-*total games played between two players is LossMatrix[i,j]+LossMatrix[j,i] OR (z.LossMatrix+z.LossMatrix.T)[i,j]
+*player(i) will have WinMatrix[j,i] losses to player(j)
+*total games played between two players is WinMatrix[i,j]+WinMatrix[j,i] OR (z.WinMatrix+z.WinMatrix.T)[i,j]
 [[  0.   1.   2.   0.   5.]
  [  6.   0.   0.   0.   0.]
  [  7.   0.   0.   0.   4.]

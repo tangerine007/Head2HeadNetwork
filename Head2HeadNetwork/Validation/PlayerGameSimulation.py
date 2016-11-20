@@ -121,5 +121,5 @@ def generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelInd
                 
                 
 #RUN
-generatePlayers(fileOut='players.csv',simulatedPlayersN=100,regionR=1,localL=1,skillSigma=0)
-generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelIndex=.3)
+generatePlayers(fileOut='players.csv',simulatedPlayersN=100,regionR=1,localL=100,skillSigma=0)
+generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelIndex=.7)
