@@ -97,7 +97,7 @@ def generateLocalTournament(region,local,fileIn='players.csv',playerTravelIndex=
     
 #playerTravelIndex: % of a regional player entering in a local
 #playerTravelIndex**2: % of a national player playing in a local
-def generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelIndex=.01):
+def generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelIndex=.01,maxTourneysPerLocal=20):
     players = read_csv("Resources/"+fileIn)
     regionsR = players['region'].max()
     localsL= players['local'].max()
@@ -106,19 +106,20 @@ def generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelInd
         f.write("p1Id,p2Id,winnerId,region,local,tourneyType\n")
         
         print "Generating Local Tournaments..."
-        for i in range(1,100):
-            region=randint(1,regionsR)
-            local=randint(1,localsL)
-            games = generateLocalTournament(region=region,local=local,fileIn=fileIn,playerTravelIndex=playerTravelIndex)
-            for j in games:
-                p1Id = j[0]
-                p2Id = j[1]
-                winnerId =j[2]
-                tourneyType="local"
-                writeString = `p1Id`+","+`p2Id`+","+`winnerId`+","+`region`+","+`local`+","+tourneyType+'\n'
-                f.write(writeString)
+        for region in range(1,regionsR+1):
+            for local in range(1,localsL+1):
+                localTourneyNumChooser = randint(1,maxTourneysPerLocal)
+                for i in range(localTourneyNumChooser):
+                    games = generateLocalTournament(region=region,local=local,fileIn=fileIn,playerTravelIndex=playerTravelIndex)
+                    for j in games:
+                        p1Id = j[0]
+                        p2Id = j[1]
+                        winnerId =j[2]
+                        tourneyType="local"
+                        writeString = `p1Id`+","+`p2Id`+","+`winnerId`+","+`region`+","+`local`+","+tourneyType+'\n'
+                        f.write(writeString)
                 
                 
 #RUN
-generatePlayers(fileOut='players.csv',simulatedPlayersN=100,regionR=1,localL=1,skillSigma=0)
-generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelIndex=.01)
+generatePlayers(fileOut='players.csv',simulatedPlayersN=10000,regionR=4,localL=10,skillSigma=5)
+generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelIndex=.3)

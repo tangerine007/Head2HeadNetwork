@@ -82,12 +82,15 @@ class networkLat:
         
         
     def validate(self,gameFileIn="Validation/Resources/games.csv",playerFileIn="Validation/Resources/players.csv",runType="Head2Head",runs=50):
+        print "Reading game/player files..."        
         games = read_csv(gameFileIn)
         playersFile = read_csv(playerFileIn)
     
+        print "Splitting into training/test sets..."
         trainGames, testGames = self.splitTrainTestSets(games,playersFile)
         
         #Train model
+        print "Adding games to model..."
         inputType = ['p1Losses:p2Losses','winnerId']["winnerId" in trainGames.columns]
         for i in trainGames.index:
             game=trainGames.ix[i]
@@ -95,6 +98,7 @@ class networkLat:
                 self.addGame(`game.p1Id`,`game.p2Id`,`game.winnerId`)
             if inputType=='p1Losses:p2Losses':
                 self.addGame(`game.p1Id`,`game.p2Id`,`game.p1Losses`,`game.p2Losses`)
+        print "Running pagerank algorithm on data..."
         for i in range(runs):
             self.runPageRank(runType)
         
@@ -115,14 +119,25 @@ class networkLat:
         
     #*ensures at least one game from every player is in the training set
     def splitTrainTestSets(self,games,playersFile,testPercent=0.3):
-        names=playersFile['playerId'].tolist()
-        oneGameEach = DataFrame(data=None,columns=games.columns)
+        #names=playersFile['playerId'].tolist()
+        #oneGameEach = DataFrame(data=None,columns=games.columns)
+        oneGameEach1 = games.groupby('p1Id').first()
+        oneGameEach2 = games.groupby('p2Id').first()
+        oneGameEach1= games[games.index.isin(oneGameEach1.index)]
+        oneGameEach2= games[games.index.isin(oneGameEach2.index)]
+        oneGameEach2 = oneGameEach2[~oneGameEach2['p2Id'].isin(oneGameEach1['p1Id'].tolist())]
+        
+        oneGameEach = concat((oneGameEach1,oneGameEach2))
+        games = games[~games.index.isin(oneGameEach.index)]
+        """
         for i in names:
+            print i
             playerGames = concat((games.loc[games.p1Id==i],games.loc[games.p2Id==i]))
             if len(playerGames)>0:
                 chosenGame = playerGames.sample(n=1)
                 oneGameEach = oneGameEach.append(chosenGame)
                 games = games[games.index!=chosenGame.index[0]]
+        """
         train, test = train_test_split(games, test_size = testPercent)
         train = concat((train,oneGameEach))
         return train, test
@@ -134,9 +149,9 @@ def testValidation():
     z = networkLat('test')
     prediction = z.validate(runType="Head2Head")
     print "{}% correct predictions".format(int(prediction*100))
-    z = networkLat('test')
-    prediction = z.validate(runType="Paper")
-    print "{}% correct predictions".format(int(prediction*100))
+    #z = networkLat('test')
+    #prediction = z.validate(runType="Paper")
+    #print "{}% correct predictions".format(int(prediction*100))
     return z
 
 def testRunPageRank():
@@ -147,13 +162,8 @@ def testRunPageRank():
     z.addGame('z','d',3,8)     
     z.addGame('c','d',4,9) 
     z.addGame('a','d',5,10)
-    for i in range(0):
+    for i in range(10):
         z.runPageRank(runType="Vanilla")
-    for i in range(30):
-        winPercent = z.LossMatrix.T/(z.LossMatrix+z.LossMatrix.T)
-        winPercent = np.nan_to_num(winPercent)
-        newPR = (winPercent * z.M).dot(np.sqrt(z.PR))/log(len(z.players)) 
-        z.PR = newPR
     print "----------------"
     return z
 """
@@ -163,8 +173,8 @@ take sqrt of every element in array = np.array(map(lambda x: map(lambda y: sqrt(
 
 
 z=testValidation()
-print z.PR
-print sum(z.PR)[0]
+for i in range(30):
+    print sum(z.PR)[0]
 
 """Loss Matrix Desc:
 In this loss matrix we see player z(i=3) has 3 losses to player d(i=4)
