@@ -10,6 +10,8 @@ import datetime
 from pandas import read_csv, concat, DataFrame
 from sklearn.cross_validation import train_test_split
 from math import sqrt, log
+from Validation.PlayerGameSimulation import generatePlayers, generateTournaments
+import matplotlib.pyplot as plt
 
 
 def timer(a,m=100):
@@ -208,6 +210,21 @@ class networkLat:
         train, test = train_test_split(games, test_size = testPercent)
         train = concat((train,oneGameEach))
         return train, test
+        
+        
+        
+def testValidationGamesWithSigmas():
+    accuracy=[]
+    sigs=[]
+    for sig in range(0,50,1):
+        generatePlayers(fileOut='Validation/Resources/players.csv',simulatedPlayersN=300,regionR=1,localL=10,skillSigma=sig)
+        generateTournaments(fileIn='Validation/Resources/players.csv',fileOut='Validation/Resources/games.csv',playerTravelIndex=1.0,maxTourneysPerLocal=10)
+        z = networkLat('test')
+        prediction = z.validate(runType="Head2Head",runs=30)
+        print "[{},{}%]".format(sig,int(prediction*100))
+        accuracy+=[int(prediction*100)]
+        sigs+=[sig]
+    plt.plot(sigs,accuracy)
 
 def testValidation(runs=25):
     z = networkLat('test')
@@ -239,7 +256,8 @@ take sqrt of every element in array = np.array(map(lambda x: map(lambda y: sqrt(
 """
 
 
-z=testValidation(runs=25)
+#z=testValidation(runs=30)
+testValidationGamesWithSigmas()
 
 
 """Loss Matrix Desc:

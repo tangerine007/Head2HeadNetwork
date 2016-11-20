@@ -12,8 +12,8 @@ from scipy.stats import norm
 #First create 'N' players in network:
 #DONE - 1) Randomly assign them skill levels normal between 0-100 (mimic Microsoft TrueSkill)
 #DONE - 2) Randomly assign them a region (out of 'R'available regions)
-def generatePlayers(fileOut='players.csv',simulatedPlayersN=10000,regionR=4,localL=10,skillSigma=5):
-    with open("Resources/"+fileOut,'w') as f:
+def generatePlayers(fileOut='Resources/players.csv',simulatedPlayersN=10000,regionR=4,localL=10,skillSigma=5):
+    with open(fileOut,'w') as f:
         f.write("playerId,region,local,skillMean,skillSigma\n")
         for i in range(simulatedPlayersN):
             playerId=`i`
@@ -68,8 +68,8 @@ def runTournament(tourneyPlayers):
         
 
 #Break down into Generating one tournament at a time, running them to collect the games
-def generateLocalTournament(region,local,fileIn='players.csv',playerTravelIndex=.01):
-    players = read_csv("Resources/"+fileIn)
+def generateLocalTournament(region,local,fileIn='Resources/players.csv',playerTravelIndex=.01):
+    players = read_csv(fileIn)
     nationalPlayers = players.query('region!='+`region`)
     regionPlayers = players.query('region=='+`region`+' and local!='+`local`)
     localPlayers = players.query('region=='+`region`+' and local=='+`local`)
@@ -97,12 +97,12 @@ def generateLocalTournament(region,local,fileIn='players.csv',playerTravelIndex=
     
 #playerTravelIndex: % of a regional player entering in a local
 #playerTravelIndex**2: % of a national player playing in a local
-def generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelIndex=.01,maxTourneysPerLocal=20):
-    players = read_csv("Resources/"+fileIn)
+def generateTournaments(fileIn='Resources/players.csv',fileOut='Resources/games.csv',playerTravelIndex=.01,maxTourneysPerLocal=20):
+    players = read_csv(fileIn)
     regionsR = players['region'].max()
     localsL= players['local'].max()
     
-    with open("Resources/"+fileOut,'w') as f:
+    with open(fileOut,'w') as f:
         f.write("p1Id,p2Id,winnerId,region,local,tourneyType\n")
         
         print "Generating Local Tournaments..."
@@ -118,8 +118,9 @@ def generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelInd
                         tourneyType="local"
                         writeString = `p1Id`+","+`p2Id`+","+`winnerId`+","+`region`+","+`local`+","+tourneyType+'\n'
                         f.write(writeString)
-                
-                
+                            
 #RUN
-generatePlayers(fileOut='players.csv',simulatedPlayersN=100,regionR=1,localL=100,skillSigma=0)
-generateTournaments(fileIn='players.csv',fileOut='games.csv',playerTravelIndex=.7)
+mainFile=False
+if mainFile:
+    generatePlayers(fileOut='Resources/players.csv',simulatedPlayersN=100,regionR=1,localL=5,skillSigma=0)
+    generateTournaments(fileIn='Resources/players.csv',fileOut='Resources/games.csv',playerTravelIndex=1.0,maxTourneysPerLocal=10)
